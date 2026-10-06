@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -11,6 +11,8 @@ import '../features/home/ui/home_screen.dart';
 import '../features/onboarding/ui/loading_screen.dart';
 import '../features/onboarding/ui/role_selection_screen.dart';
 import '../features/onboarding/ui/warung_setup_screen.dart';
+import '../features/products/ui/product_form_screen.dart';
+import '../features/products/ui/stock_list_screen.dart';
 import '../features/profile/data/profile_repository.dart';
 import '../features/profile/domain/user_profile.dart';
 import '../features/warung_shell/ui/warung_account_screen.dart';
@@ -25,6 +27,8 @@ abstract final class Routes {
   static const warung = '/warung';
   static const warungPos = '/warung/kasir';
   static const warungStock = '/warung/stok';
+  static const warungProductNew = '/warung/stok/baru';
+  static String warungProduct(String id) => '/warung/stok/barang/$id';
   static const warungReports = '/warung/laporan';
   static const warungAccount = '/warung/akun';
 
@@ -73,7 +77,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.listen(membershipProvider, bump);
   ref.onDispose(refresh.dispose);
 
+  final rootKey = GlobalKey<NavigatorState>();
+
   return GoRouter(
+    navigatorKey: rootKey,
     initialLocation: Routes.loading,
     refreshListenable: refresh,
     redirect: (context, state) {
@@ -124,10 +131,23 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.warungStock,
-                builder: (_, _) => const ComingSoon(
-                  title: 'Stok barang',
-                  icon: LucideIcons.package,
-                ),
+                builder: (_, _) => const StockListScreen(),
+                routes: [
+                  // Forms cover the bottom navigation, so they open on the
+                  // root navigator instead of inside the tab.
+                  GoRoute(
+                    path: 'baru',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const ProductFormScreen(),
+                  ),
+                  GoRoute(
+                    path: 'barang/:id',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, state) => ProductFormScreen(
+                      productId: state.pathParameters['id'],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -19,6 +19,9 @@ service cloud.firestore {
     function changedOnly(fields) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
     }
+    function unchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
 
     // Everything is denied unless a rule below allows it.
     match /{document=**} {
@@ -41,6 +44,11 @@ service cloud.firestore {
         && validProfile();
     }
 
+    // Shared catalog of goods. Entries are created by Cloud Functions.
+    match /catalog/{id} {
+      allow read: if signedIn();
+    }
+
     match /warungs/{wid} {
       allow read: if isMember(wid);
       // Created by the createWarung function. `geohash` and `ownerUid` stay
@@ -55,6 +63,29 @@ service cloud.firestore {
 
       match /cash/current {
         allow read: if isMember(wid);
+      }
+
+      match /products/{pid} {
+        function validProduct() {
+          let d = request.resource.data;
+          return d.name is string && d.name.size() > 0 && d.name.size() <= 80
+            && d.sellPrice is int && d.sellPrice >= 0
+            && d.lastBuyPrice is int && d.lastBuyPrice >= 0
+            && d.stock is int
+            && d.active is bool;
+        }
+        allow read: if isMember(wid);
+        // `computed` holds the reorder figures calculated by Cloud Functions.
+        allow create: if isOwner(wid) && validProduct()
+          && !('computed' in request.resource.data);
+        // The owner manages the product. Any member may move stock, which is
+        // what a sale or a restock does; a cashier cannot touch prices.
+        allow update: if validProduct() && (
+          (isOwner(wid) && unchanged(['computed']))
+          || (isMember(wid) && changedOnly(['stock', 'lastBuyPrice', 'updatedAt']))
+        );
+        // Products are switched off with `active`, never deleted, so sales
+        // history keeps pointing at something.
       }
     }
   }

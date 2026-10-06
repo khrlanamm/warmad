@@ -33,7 +33,8 @@
         "firebase-debug.*.log",
         "*.local",
         "test",
-        "vitest.config.mts"
+        "vitest.config.mts",
+        "scripts"
       ],
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run build"

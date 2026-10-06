@@ -1,0 +1,1066 @@
+[
+ {
+  "name": "Beras 5 kg",
+  "category": "Sembako",
+  "sellPrice": 78000,
+  "buyPrice": 72000,
+  "packName": "karung",
+  "packSize": 1
+ },
+ {
+  "name": "Beras 1 kg",
+  "category": "Sembako",
+  "sellPrice": 16000,
+  "buyPrice": 14500,
+  "packName": "karung",
+  "packSize": 25
+ },
+ {
+  "name": "Gula Pasir 1 kg",
+  "category": "Sembako",
+  "sellPrice": 18000,
+  "buyPrice": 16500,
+  "packName": "karung",
+  "packSize": 50
+ },
+ {
+  "name": "Gula Pasir 1/4 kg",
+  "category": "Sembako",
+  "sellPrice": 5000,
+  "buyPrice": 4200,
+  "packName": "pak",
+  "packSize": 20
+ },
+ {
+  "name": "Minyak Goreng 1 L",
+  "category": "Sembako",
+  "sellPrice": 19000,
+  "buyPrice": 17500,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Minyak Goreng 2 L",
+  "category": "Sembako",
+  "sellPrice": 37000,
+  "buyPrice": 34500,
+  "packName": "dus",
+  "packSize": 6
+ },
+ {
+  "name": "Minyak Goreng 1/4 L",
+  "category": "Sembako",
+  "sellPrice": 5500,
+  "buyPrice": 4700,
+  "packName": "pak",
+  "packSize": 24
+ },
+ {
+  "name": "Telur Ayam 1 kg",
+  "category": "Sembako",
+  "sellPrice": 30000,
+  "buyPrice": 27500,
+  "packName": "peti",
+  "packSize": 15
+ },
+ {
+  "name": "Telur Ayam 1/4 kg",
+  "category": "Sembako",
+  "sellPrice": 7500,
+  "buyPrice": 6900,
+  "packName": "peti",
+  "packSize": 60
+ },
+ {
+  "name": "Tepung Terigu 1 kg",
+  "category": "Sembako",
+  "sellPrice": 14000,
+  "buyPrice": 12500,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Tepung Beras 500 g",
+  "category": "Sembako",
+  "sellPrice": 9000,
+  "buyPrice": 7800,
+  "packName": "dus",
+  "packSize": 20
+ },
+ {
+  "name": "Garam Halus 250 g",
+  "category": "Sembako",
+  "sellPrice": 3500,
+  "buyPrice": 2700,
+  "packName": "pak",
+  "packSize": 20
+ },
+ {
+  "name": "Kecap Manis 135 ml",
+  "category": "Sembako",
+  "sellPrice": 8000,
+  "buyPrice": 6900,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Kecap Manis Sachet",
+  "category": "Sembako",
+  "sellPrice": 1500,
+  "buyPrice": 1150,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Saus Sambal 135 ml",
+  "category": "Sembako",
+  "sellPrice": 7500,
+  "buyPrice": 6400,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Saus Sambal Sachet",
+  "category": "Sembako",
+  "sellPrice": 1000,
+  "buyPrice": 750,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Santan Instan 65 ml",
+  "category": "Sembako",
+  "sellPrice": 4000,
+  "buyPrice": 3300,
+  "packName": "dus",
+  "packSize": 36
+ },
+ {
+  "name": "Penyedap Rasa Sachet",
+  "category": "Sembako",
+  "sellPrice": 500,
+  "buyPrice": 380,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Kaldu Ayam Sachet",
+  "category": "Sembako",
+  "sellPrice": 500,
+  "buyPrice": 390,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Bumbu Racik Nasi Goreng",
+  "category": "Sembako",
+  "sellPrice": 2500,
+  "buyPrice": 2000,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Merica Bubuk Sachet",
+  "category": "Sembako",
+  "sellPrice": 1000,
+  "buyPrice": 750,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Bawang Merah 1/4 kg",
+  "category": "Sembako",
+  "sellPrice": 10000,
+  "buyPrice": 8500,
+  "packName": "kg",
+  "packSize": 4
+ },
+ {
+  "name": "Bawang Putih 1/4 kg",
+  "category": "Sembako",
+  "sellPrice": 11000,
+  "buyPrice": 9500,
+  "packName": "kg",
+  "packSize": 4
+ },
+ {
+  "name": "Cabai Rawit 1 ons",
+  "category": "Sembako",
+  "sellPrice": 7000,
+  "buyPrice": 5500,
+  "packName": "kg",
+  "packSize": 10
+ },
+ {
+  "name": "Kerupuk Mentah 250 g",
+  "category": "Sembako",
+  "sellPrice": 9000,
+  "buyPrice": 7500,
+  "packName": "pak",
+  "packSize": 10
+ },
+ {
+  "name": "Indomie Goreng",
+  "category": "Sembako",
+  "sellPrice": 3500,
+  "buyPrice": 2900,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Indomie Soto",
+  "category": "Sembako",
+  "sellPrice": 3300,
+  "buyPrice": 2750,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Indomie Ayam Bawang",
+  "category": "Sembako",
+  "sellPrice": 3300,
+  "buyPrice": 2750,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Indomie Kari Ayam",
+  "category": "Sembako",
+  "sellPrice": 3500,
+  "buyPrice": 2900,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Mie Sedaap Goreng",
+  "category": "Sembako",
+  "sellPrice": 3500,
+  "buyPrice": 2850,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Mie Sedaap Soto",
+  "category": "Sembako",
+  "sellPrice": 3300,
+  "buyPrice": 2700,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Sarimi Isi 2 Ayam Bawang",
+  "category": "Sembako",
+  "sellPrice": 4000,
+  "buyPrice": 3350,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Supermi Ayam Bawang",
+  "category": "Sembako",
+  "sellPrice": 3000,
+  "buyPrice": 2500,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Pop Mie Ayam",
+  "category": "Sembako",
+  "sellPrice": 6000,
+  "buyPrice": 5100,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Bihun Jagung 320 g",
+  "category": "Sembako",
+  "sellPrice": 8500,
+  "buyPrice": 7300,
+  "packName": "dus",
+  "packSize": 20
+ },
+ {
+  "name": "Sarden Kaleng 155 g",
+  "category": "Sembako",
+  "sellPrice": 12000,
+  "buyPrice": 10500,
+  "packName": "dus",
+  "packSize": 50
+ },
+ {
+  "name": "Kornet Sapi Sachet",
+  "category": "Sembako",
+  "sellPrice": 6000,
+  "buyPrice": 5000,
+  "packName": "dus",
+  "packSize": 48
+ },
+ {
+  "name": "Susu Kental Manis Sachet",
+  "category": "Sembako",
+  "sellPrice": 2000,
+  "buyPrice": 1600,
+  "packName": "renceng",
+  "packSize": 6
+ },
+ {
+  "name": "Susu Kental Manis Kaleng 370 g",
+  "category": "Sembako",
+  "sellPrice": 13500,
+  "buyPrice": 12000,
+  "packName": "dus",
+  "packSize": 48
+ },
+ {
+  "name": "Margarin Sachet 200 g",
+  "category": "Sembako",
+  "sellPrice": 8500,
+  "buyPrice": 7400,
+  "packName": "dus",
+  "packSize": 60
+ },
+ {
+  "name": "Roti Tawar",
+  "category": "Sembako",
+  "sellPrice": 15000,
+  "buyPrice": 13000,
+  "packName": "pcs",
+  "packSize": 1
+ },
+ {
+  "name": "Roti Sobek Cokelat",
+  "category": "Sembako",
+  "sellPrice": 6000,
+  "buyPrice": 5000,
+  "packName": "pcs",
+  "packSize": 1
+ },
+ {
+  "name": "Aqua 600ml",
+  "category": "Minuman",
+  "sellPrice": 4000,
+  "buyPrice": 2800,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Aqua 1500ml",
+  "category": "Minuman",
+  "sellPrice": 7000,
+  "buyPrice": 5300,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Aqua Gelas 220ml",
+  "category": "Minuman",
+  "sellPrice": 1000,
+  "buyPrice": 560,
+  "packName": "dus",
+  "packSize": 48
+ },
+ {
+  "name": "Le Minerale 600ml",
+  "category": "Minuman",
+  "sellPrice": 4000,
+  "buyPrice": 2750,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Air Galon Isi Ulang",
+  "category": "Minuman",
+  "sellPrice": 7000,
+  "buyPrice": 5000,
+  "packName": "galon",
+  "packSize": 1
+ },
+ {
+  "name": "Teh Pucuk 350ml",
+  "category": "Minuman",
+  "sellPrice": 4000,
+  "buyPrice": 3000,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Teh Botol Sosro 450ml",
+  "category": "Minuman",
+  "sellPrice": 6000,
+  "buyPrice": 4800,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Teh Gelas 170ml",
+  "category": "Minuman",
+  "sellPrice": 1500,
+  "buyPrice": 1000,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Frestea 350ml",
+  "category": "Minuman",
+  "sellPrice": 4500,
+  "buyPrice": 3500,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Fruit Tea 350ml",
+  "category": "Minuman",
+  "sellPrice": 5000,
+  "buyPrice": 3900,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Floridina 350ml",
+  "category": "Minuman",
+  "sellPrice": 4000,
+  "buyPrice": 3000,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Pocari Sweat 350ml",
+  "category": "Minuman",
+  "sellPrice": 7500,
+  "buyPrice": 6200,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Mizone 500ml",
+  "category": "Minuman",
+  "sellPrice": 6000,
+  "buyPrice": 4800,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Coca-Cola 390ml",
+  "category": "Minuman",
+  "sellPrice": 6000,
+  "buyPrice": 4700,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Sprite 390ml",
+  "category": "Minuman",
+  "sellPrice": 6000,
+  "buyPrice": 4700,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Fanta 390ml",
+  "category": "Minuman",
+  "sellPrice": 6000,
+  "buyPrice": 4700,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Kratingdaeng 150ml",
+  "category": "Minuman",
+  "sellPrice": 7000,
+  "buyPrice": 5900,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Extra Joss Sachet",
+  "category": "Minuman",
+  "sellPrice": 1500,
+  "buyPrice": 1100,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Kuku Bima Sachet",
+  "category": "Minuman",
+  "sellPrice": 1500,
+  "buyPrice": 1100,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Kopi Kapal Api Sachet",
+  "category": "Minuman",
+  "sellPrice": 1500,
+  "buyPrice": 1150,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Kopi Kapal Api Special Mix",
+  "category": "Minuman",
+  "sellPrice": 2000,
+  "buyPrice": 1500,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Kopi ABC Susu Sachet",
+  "category": "Minuman",
+  "sellPrice": 2000,
+  "buyPrice": 1500,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Good Day Cappuccino Sachet",
+  "category": "Minuman",
+  "sellPrice": 2500,
+  "buyPrice": 1900,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Luwak White Koffie Sachet",
+  "category": "Minuman",
+  "sellPrice": 2000,
+  "buyPrice": 1500,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Top Coffee Sachet",
+  "category": "Minuman",
+  "sellPrice": 1500,
+  "buyPrice": 1100,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Nutrisari Jeruk Sachet",
+  "category": "Minuman",
+  "sellPrice": 1500,
+  "buyPrice": 1150,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Pop Ice Cokelat",
+  "category": "Minuman",
+  "sellPrice": 1500,
+  "buyPrice": 1050,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Teh Celup Sariwangi Isi 25",
+  "category": "Minuman",
+  "sellPrice": 7500,
+  "buyPrice": 6300,
+  "packName": "dus",
+  "packSize": 48
+ },
+ {
+  "name": "Energen Cokelat Sachet",
+  "category": "Minuman",
+  "sellPrice": 2500,
+  "buyPrice": 1950,
+  "packName": "renceng",
+  "packSize": 10
+ },
+ {
+  "name": "Susu UHT Cokelat 125ml",
+  "category": "Minuman",
+  "sellPrice": 3500,
+  "buyPrice": 2800,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Susu Beruang 189ml",
+  "category": "Minuman",
+  "sellPrice": 11000,
+  "buyPrice": 9600,
+  "packName": "dus",
+  "packSize": 30
+ },
+ {
+  "name": "Yakult Isi 5",
+  "category": "Minuman",
+  "sellPrice": 11000,
+  "buyPrice": 9500,
+  "packName": "pak",
+  "packSize": 10
+ },
+ {
+  "name": "Es Batu Kristal",
+  "category": "Minuman",
+  "sellPrice": 3000,
+  "buyPrice": 1800,
+  "packName": "kantong",
+  "packSize": 1
+ },
+ {
+  "name": "Chitato Sapi Panggang 35 g",
+  "category": "Makanan ringan",
+  "sellPrice": 6000,
+  "buyPrice": 4900,
+  "packName": "dus",
+  "packSize": 30
+ },
+ {
+  "name": "Qtela Singkong 60 g",
+  "category": "Makanan ringan",
+  "sellPrice": 7000,
+  "buyPrice": 5800,
+  "packName": "dus",
+  "packSize": 30
+ },
+ {
+  "name": "Taro Net 36 g",
+  "category": "Makanan ringan",
+  "sellPrice": 5000,
+  "buyPrice": 4000,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Beng-Beng",
+  "category": "Makanan ringan",
+  "sellPrice": 2500,
+  "buyPrice": 1950,
+  "packName": "box",
+  "packSize": 20
+ },
+ {
+  "name": "Chocolatos",
+  "category": "Makanan ringan",
+  "sellPrice": 1000,
+  "buyPrice": 720,
+  "packName": "box",
+  "packSize": 24
+ },
+ {
+  "name": "Tango Wafer Cokelat",
+  "category": "Makanan ringan",
+  "sellPrice": 2500,
+  "buyPrice": 1900,
+  "packName": "box",
+  "packSize": 20
+ },
+ {
+  "name": "Oreo Mini",
+  "category": "Makanan ringan",
+  "sellPrice": 2500,
+  "buyPrice": 1950,
+  "packName": "box",
+  "packSize": 12
+ },
+ {
+  "name": "Roma Kelapa",
+  "category": "Makanan ringan",
+  "sellPrice": 10000,
+  "buyPrice": 8500,
+  "packName": "dus",
+  "packSize": 20
+ },
+ {
+  "name": "Biskuat Cokelat",
+  "category": "Makanan ringan",
+  "sellPrice": 2000,
+  "buyPrice": 1550,
+  "packName": "box",
+  "packSize": 20
+ },
+ {
+  "name": "Better",
+  "category": "Makanan ringan",
+  "sellPrice": 2000,
+  "buyPrice": 1550,
+  "packName": "box",
+  "packSize": 20
+ },
+ {
+  "name": "Nabati Keju",
+  "category": "Makanan ringan",
+  "sellPrice": 2000,
+  "buyPrice": 1500,
+  "packName": "box",
+  "packSize": 20
+ },
+ {
+  "name": "Kacang Garuda 80 g",
+  "category": "Makanan ringan",
+  "sellPrice": 8500,
+  "buyPrice": 7200,
+  "packName": "dus",
+  "packSize": 40
+ },
+ {
+  "name": "Permen Kopiko",
+  "category": "Makanan ringan",
+  "sellPrice": 500,
+  "buyPrice": 330,
+  "packName": "pak",
+  "packSize": 50
+ },
+ {
+  "name": "Permen Relaxa",
+  "category": "Makanan ringan",
+  "sellPrice": 500,
+  "buyPrice": 320,
+  "packName": "pak",
+  "packSize": 50
+ },
+ {
+  "name": "Permen Mentos",
+  "category": "Makanan ringan",
+  "sellPrice": 3500,
+  "buyPrice": 2800,
+  "packName": "box",
+  "packSize": 14
+ },
+ {
+  "name": "Mie Gemez Enaak",
+  "category": "Makanan ringan",
+  "sellPrice": 1000,
+  "buyPrice": 720,
+  "packName": "box",
+  "packSize": 30
+ },
+ {
+  "name": "Kerupuk Kaleng",
+  "category": "Makanan ringan",
+  "sellPrice": 1000,
+  "buyPrice": 700,
+  "packName": "pcs",
+  "packSize": 1
+ },
+ {
+  "name": "Es Krim Stik Cokelat",
+  "category": "Makanan ringan",
+  "sellPrice": 5000,
+  "buyPrice": 3900,
+  "packName": "box",
+  "packSize": 24
+ },
+ {
+  "name": "Sampoerna Mild 16",
+  "category": "Rokok",
+  "sellPrice": 35000,
+  "buyPrice": 32500,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Sampoerna Kretek 12",
+  "category": "Rokok",
+  "sellPrice": 17000,
+  "buyPrice": 15600,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Gudang Garam Surya 12",
+  "category": "Rokok",
+  "sellPrice": 26000,
+  "buyPrice": 24000,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Gudang Garam Filter 12",
+  "category": "Rokok",
+  "sellPrice": 25000,
+  "buyPrice": 23200,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Djarum Super 12",
+  "category": "Rokok",
+  "sellPrice": 25000,
+  "buyPrice": 23000,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Djarum 76",
+  "category": "Rokok",
+  "sellPrice": 16000,
+  "buyPrice": 14600,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "LA Bold 20",
+  "category": "Rokok",
+  "sellPrice": 36000,
+  "buyPrice": 33500,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Dji Sam Soe 12",
+  "category": "Rokok",
+  "sellPrice": 23000,
+  "buyPrice": 21300,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Marlboro Merah 20",
+  "category": "Rokok",
+  "sellPrice": 45000,
+  "buyPrice": 42300,
+  "packName": "slop",
+  "packSize": 10
+ },
+ {
+  "name": "Korek Gas",
+  "category": "Rokok",
+  "sellPrice": 3000,
+  "buyPrice": 2000,
+  "packName": "pak",
+  "packSize": 50
+ },
+ {
+  "name": "Sabun Mandi Lifebuoy 75 g",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 4500,
+  "buyPrice": 3700,
+  "packName": "dus",
+  "packSize": 72
+ },
+ {
+  "name": "Sabun Mandi Giv 76 g",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 3500,
+  "buyPrice": 2800,
+  "packName": "dus",
+  "packSize": 72
+ },
+ {
+  "name": "Sampo Sachet Pantene",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 1000,
+  "buyPrice": 750,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Sampo Sachet Sunsilk",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 1000,
+  "buyPrice": 720,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Sampo Sachet Clear",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 1000,
+  "buyPrice": 750,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Pasta Gigi Pepsodent 75 g",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 7000,
+  "buyPrice": 5900,
+  "packName": "dus",
+  "packSize": 72
+ },
+ {
+  "name": "Sikat Gigi",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 5000,
+  "buyPrice": 3800,
+  "packName": "pak",
+  "packSize": 12
+ },
+ {
+  "name": "Deterjen Rinso Sachet",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 1000,
+  "buyPrice": 780,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Deterjen Daia 850 g",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 19000,
+  "buyPrice": 17000,
+  "packName": "dus",
+  "packSize": 12
+ },
+ {
+  "name": "Pewangi Molto Sachet",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 1000,
+  "buyPrice": 720,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Sabun Cuci Piring Sunlight Sachet",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 2000,
+  "buyPrice": 1550,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Sabun Cuci Piring Sunlight 210 ml",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 5500,
+  "buyPrice": 4600,
+  "packName": "dus",
+  "packSize": 24
+ },
+ {
+  "name": "Pembersih Lantai Sachet",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 1000,
+  "buyPrice": 720,
+  "packName": "renceng",
+  "packSize": 12
+ },
+ {
+  "name": "Obat Nyamuk Bakar",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 5000,
+  "buyPrice": 4000,
+  "packName": "dus",
+  "packSize": 60
+ },
+ {
+  "name": "Tisu Wajah 250 Lembar",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 9000,
+  "buyPrice": 7500,
+  "packName": "dus",
+  "packSize": 48
+ },
+ {
+  "name": "Pembalut Isi 8",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 6500,
+  "buyPrice": 5400,
+  "packName": "dus",
+  "packSize": 48
+ },
+ {
+  "name": "Popok Bayi Satuan M",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 2500,
+  "buyPrice": 1950,
+  "packName": "pak",
+  "packSize": 34
+ },
+ {
+  "name": "Minyak Kayu Putih 15 ml",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 8000,
+  "buyPrice": 6800,
+  "packName": "box",
+  "packSize": 12
+ },
+ {
+  "name": "Tolak Angin Sachet",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 4500,
+  "buyPrice": 3700,
+  "packName": "box",
+  "packSize": 12
+ },
+ {
+  "name": "Bodrex",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 5000,
+  "buyPrice": 4100,
+  "packName": "box",
+  "packSize": 25
+ },
+ {
+  "name": "Paramex",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 3500,
+  "buyPrice": 2800,
+  "packName": "box",
+  "packSize": 50
+ },
+ {
+  "name": "Promag",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 9000,
+  "buyPrice": 7600,
+  "packName": "box",
+  "packSize": 12
+ },
+ {
+  "name": "Lilin",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 2000,
+  "buyPrice": 1400,
+  "packName": "pak",
+  "packSize": 12
+ },
+ {
+  "name": "Baterai AA Isi 2",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 6000,
+  "buyPrice": 4700,
+  "packName": "box",
+  "packSize": 12
+ },
+ {
+  "name": "Lampu LED 9 Watt",
+  "category": "Kebutuhan rumah",
+  "sellPrice": 15000,
+  "buyPrice": 12000,
+  "packName": "dus",
+  "packSize": 10
+ },
+ {
+  "name": "Gas Elpiji 3 kg",
+  "category": "Lainnya",
+  "sellPrice": 22000,
+  "buyPrice": 19500,
+  "packName": "tabung",
+  "packSize": 1
+ },
+ {
+  "name": "Kantong Plastik Kecil",
+  "category": "Lainnya",
+  "sellPrice": 5000,
+  "buyPrice": 3800,
+  "packName": "pak",
+  "packSize": 1
+ },
+ {
+  "name": "Pulsa 10.000",
+  "category": "Lainnya",
+  "sellPrice": 12000,
+  "buyPrice": 10500,
+  "packName": "pcs",
+  "packSize": 1
+ },
+ {
+  "name": "Token Listrik 20.000",
+  "category": "Lainnya",
+  "sellPrice": 22500,
+  "buyPrice": 20500,
+  "packName": "pcs",
+  "packSize": 1
+ },
+ {
+  "name": "Bensin Eceran 1 L",
+  "category": "Lainnya",
+  "sellPrice": 13000,
+  "buyPrice": 11500,
+  "packName": "liter",
+  "packSize": 1
+ }
+]
