@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "333384451945-vbglhl3u69jk365rn2higr088totdhi5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.benevology.warmad",
+            "certificate_hash": "2c35e583a1431059068d5fcc760e4a1a658d3a32"
+          }
+        },
+        {
           "client_id": "333384451945-q15nv1n7rvt254vimcho60m2audod3d0.apps.googleusercontent.com",
           "client_type": 3
         }
