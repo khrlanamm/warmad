@@ -57,6 +57,16 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               _LowStockBanner(products: low),
             ],
+            const SizedBox(height: 12),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                leading: const Icon(LucideIcons.lock, color: AppColors.green),
+                title: Text('Tutup kas', style: theme.textTheme.titleSmall),
+                trailing: const Icon(LucideIcons.chevronRight),
+                onTap: () => context.push(Routes.warungCashClosing),
+              ),
+            ),
             const SizedBox(height: 24),
             Text('Transaksi terakhir', style: theme.textTheme.titleLarge),
             const SizedBox(height: 10),

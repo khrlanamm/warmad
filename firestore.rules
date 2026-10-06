@@ -83,8 +83,62 @@ service cloud.firestore {
             && movedBy('salesCash', tx('sales').data.total)
             && movedBy('salesCount', 1);
         }
+        // Closing the open period: the figures frozen in the closing are
+        // taken out of the counters, the counted cash becomes the next
+        // opening balance, and the period number moves on by one. Anything
+        // another phone recorded but this one had not seen yet stays in the
+        // counters and belongs to the next period.
+        function closing() {
+          let c = tx('cashClosings').data;
+          let after = request.resource.data;
+          return after.lastTx.kind == 'cashClosings'
+            && createdInThisBatch('cashClosings')
+            && after.lastTx.id == string(resource.data.seq)
+            && after.seq == resource.data.seq + 1
+            && after.openingBalance == c.counted
+            && movedBy('salesCash', -c.salesCash) && after.salesCash >= 0
+            && movedBy('debtCollected', -c.debtCollected) && after.debtCollected >= 0
+            && movedBy('purchasesCash', -c.purchasesCash) && after.purchasesCash >= 0
+            && movedBy('expenses', -c.expenses) && after.expenses >= 0
+            && movedBy('prive', -c.prive) && after.prive >= 0
+            && movedBy('salesCount', -c.salesCount) && after.salesCount >= 0
+            && changedOnly(['salesCash', 'debtCollected', 'purchasesCash', 'expenses',
+                            'prive', 'salesCount', 'openingBalance', 'seq', 'openedAt',
+                            'lastTx']);
+        }
         allow read: if isMember(wid);
-        allow update: if isMember(wid) && cashSale();
+        allow update: if isMember(wid) && (cashSale() || closing());
+      }
+
+      // One document per closed period, named after the period number, so
+      // the same period can never be closed twice.
+      match /cashClosings/{closingId} {
+        function validClosing() {
+          let d = request.resource.data;
+          let cash = get(/databases/$(database)/documents/warungs/$(wid)/cash/current).data;
+          return d.seq is int && closingId == string(d.seq)
+            && d.closedByUid == request.auth.uid
+            && d.openingBalance == cash.openingBalance
+            && d.salesCash is int && d.salesCash >= 0
+            && d.debtCollected is int && d.debtCollected >= 0
+            && d.purchasesCash is int && d.purchasesCash >= 0
+            && d.expenses is int && d.expenses >= 0
+            && d.prive is int && d.prive >= 0
+            && d.salesCount is int && d.salesCount >= 0
+            && d.expected == d.openingBalance + d.salesCash + d.debtCollected
+                             - d.purchasesCash - d.expenses - d.prive
+            && d.counted is int && d.counted >= 0
+            && d.difference == d.counted - d.expected
+            && d.closedAt is timestamp
+            && d.createdAt == request.time;
+        }
+        function cashUpdatedForThisClosing() {
+          let cash = getAfter(/databases/$(database)/documents/warungs/$(wid)/cash/current).data;
+          return cash.lastTx.kind == 'cashClosings' && cash.lastTx.id == closingId;
+        }
+        allow read: if isMember(wid);
+        allow create: if isMember(wid) && validClosing() && cashUpdatedForThisClosing();
+        // A closing is a record of what was counted. It is never changed.
       }
 
       match /sales/{saleId} {

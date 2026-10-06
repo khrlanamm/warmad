@@ -7,6 +7,8 @@ import '../core/widgets/coming_soon.dart';
 import '../features/auth/data/auth_service.dart';
 import '../features/auth/ui/sign_in_screen.dart';
 import '../features/buyer/ui/buyer_shell.dart';
+import '../features/cash/ui/cash_closing_screen.dart';
+import '../features/cash/ui/cash_history_screen.dart';
 import '../features/home/ui/home_screen.dart';
 import '../features/onboarding/ui/loading_screen.dart';
 import '../features/onboarding/ui/role_selection_screen.dart';
@@ -32,6 +34,8 @@ abstract final class Routes {
   static String warungProduct(String id) => '/warung/stok/barang/$id';
   static const warungReports = '/warung/laporan';
   static const warungAccount = '/warung/akun';
+  static const warungCashClosing = '/warung/tutup-kas';
+  static const warungCashHistory = '/warung/riwayat-kas';
 
   static const buyer = '/pembeli';
   static const buyerSearch = '/pembeli/cari';
@@ -114,6 +118,18 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.warung,
                 builder: (_, _) => const HomeScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'tutup-kas',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const CashClosingScreen(),
+                  ),
+                  GoRoute(
+                    path: 'riwayat-kas',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const CashHistoryScreen(),
+                  ),
+                ],
               ),
             ],
           ),

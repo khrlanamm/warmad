@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../app/router.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../auth/data/auth_service.dart';
@@ -118,6 +120,15 @@ class WarungAccountScreen extends ConsumerWidget {
               ),
             ),
           ],
+          const SizedBox(height: 12),
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: ListTile(
+              title: const Text('Riwayat tutup kas'),
+              trailing: const Icon(LucideIcons.chevronRight),
+              onTap: () => context.push(Routes.warungCashHistory),
+            ),
+          ),
           const SizedBox(height: 20),
           OutlinedButton.icon(
             onPressed: user == null
