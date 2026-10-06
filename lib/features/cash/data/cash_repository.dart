@@ -53,6 +53,7 @@ class CashRepository {
       'purchasesCash': FieldValue.increment(-closing.purchasesCash),
       'expenses': FieldValue.increment(-closing.expenses),
       'prive': FieldValue.increment(-closing.prive),
+      'refunds': FieldValue.increment(-closing.refunds),
       'salesCount': FieldValue.increment(-closing.salesCount),
       'openingBalance': closing.counted,
       'seq': FieldValue.increment(1),

@@ -50,6 +50,27 @@ service cloud.firestore {
     }
 
     match /warungs/{wid} {
+      // Paths and lookups shared by the rules below. `getAfter` reads a
+      // document as it will be once the whole batch is applied, which is how
+      // one write is tied to another write in the same batch.
+      function path(collection, id) {
+        return /databases/$(database)/documents/warungs/$(wid)/$(collection)/$(id);
+      }
+      function after(collection, id) {
+        return getAfter(path(collection, id)).data;
+      }
+      function createdNow(collection, id) {
+        return !exists(path(collection, id)) && existsAfter(path(collection, id));
+      }
+      function movedBy(field, amount) {
+        return request.resource.data[field] == resource.data.get(field, 0) + amount;
+      }
+      // True when `collection/id` in this batch points back at `kind/txId`.
+      function linkedTo(collection, id, kind, txId) {
+        return after(collection, id).lastTx.kind == kind
+          && after(collection, id).lastTx.id == txId;
+      }
+
       allow read: if isMember(wid);
       // Created by the createWarung function. `geohash` and `ownerUid` stay
       // server-owned.
@@ -66,22 +87,32 @@ service cloud.firestore {
       // create that transaction, and the amounts must agree. This is what
       // keeps "stock went down" and "cash went up" one inseparable step.
       match /cash/current {
-        function tx(kind) {
-          return getAfter(/databases/$(database)/documents/warungs/$(wid)/$(kind)/$(request.resource.data.lastTx.id));
-        }
-        function createdInThisBatch(kind) {
-          return !exists(/databases/$(database)/documents/warungs/$(wid)/$(kind)/$(request.resource.data.lastTx.id))
-            && existsAfter(/databases/$(database)/documents/warungs/$(wid)/$(kind)/$(request.resource.data.lastTx.id));
-        }
-        function movedBy(field, amount) {
-          return request.resource.data[field] == resource.data[field] + amount;
+        function txId() {
+          return request.resource.data.lastTx.id;
         }
         function cashSale() {
           return request.resource.data.lastTx.kind == 'sales'
-            && createdInThisBatch('sales')
+            && createdNow('sales', txId())
+            && after('sales', txId()).payment == 'cash'
             && changedOnly(['salesCash', 'salesCount', 'lastTx'])
-            && movedBy('salesCash', tx('sales').data.total)
+            && movedBy('salesCash', after('sales', txId()).total)
             && movedBy('salesCount', 1);
+        }
+        // Which counter a cash move of this kind belongs to.
+        function counterOf(kind) {
+          return kind == 'purchase' || kind == 'supplierPayment' ? 'purchasesCash'
+            : kind == 'expense' ? 'expenses'
+            : kind == 'prive' ? 'prive'
+            : kind == 'debtPayment' ? 'debtCollected'
+            : 'refunds';
+        }
+        function cashMove() {
+          let m = after('cashMoves', txId());
+          return request.resource.data.lastTx.kind == 'cashMoves'
+            && createdNow('cashMoves', txId())
+            && m.cash == true
+            && changedOnly([counterOf(m.kind), 'lastTx'])
+            && movedBy(counterOf(m.kind), m.amount);
         }
         // Closing the open period: the figures frozen in the closing are
         // taken out of the counters, the counted cash becomes the next
@@ -89,25 +120,26 @@ service cloud.firestore {
         // another phone recorded but this one had not seen yet stays in the
         // counters and belongs to the next period.
         function closing() {
-          let c = tx('cashClosings').data;
-          let after = request.resource.data;
-          return after.lastTx.kind == 'cashClosings'
-            && createdInThisBatch('cashClosings')
-            && after.lastTx.id == string(resource.data.seq)
-            && after.seq == resource.data.seq + 1
-            && after.openingBalance == c.counted
-            && movedBy('salesCash', -c.salesCash) && after.salesCash >= 0
-            && movedBy('debtCollected', -c.debtCollected) && after.debtCollected >= 0
-            && movedBy('purchasesCash', -c.purchasesCash) && after.purchasesCash >= 0
-            && movedBy('expenses', -c.expenses) && after.expenses >= 0
-            && movedBy('prive', -c.prive) && after.prive >= 0
-            && movedBy('salesCount', -c.salesCount) && after.salesCount >= 0
+          let c = after('cashClosings', txId());
+          let next = request.resource.data;
+          return next.lastTx.kind == 'cashClosings'
+            && createdNow('cashClosings', txId())
+            && txId() == string(resource.data.seq)
+            && next.seq == resource.data.seq + 1
+            && next.openingBalance == c.counted
+            && movedBy('salesCash', -c.salesCash) && next.salesCash >= 0
+            && movedBy('debtCollected', -c.debtCollected) && next.debtCollected >= 0
+            && movedBy('purchasesCash', -c.purchasesCash) && next.purchasesCash >= 0
+            && movedBy('expenses', -c.expenses) && next.expenses >= 0
+            && movedBy('prive', -c.prive) && next.prive >= 0
+            && movedBy('refunds', -c.refunds) && next.refunds >= 0
+            && movedBy('salesCount', -c.salesCount) && next.salesCount >= 0
             && changedOnly(['salesCash', 'debtCollected', 'purchasesCash', 'expenses',
-                            'prive', 'salesCount', 'openingBalance', 'seq', 'openedAt',
-                            'lastTx']);
+                            'prive', 'refunds', 'salesCount', 'openingBalance', 'seq',
+                            'openedAt', 'lastTx']);
         }
         allow read: if isMember(wid);
-        allow update: if isMember(wid) && (cashSale() || closing());
+        allow update: if isMember(wid) && (cashSale() || cashMove() || closing());
       }
 
       // One document per closed period, named after the period number, so
@@ -115,7 +147,7 @@ service cloud.firestore {
       match /cashClosings/{closingId} {
         function validClosing() {
           let d = request.resource.data;
-          let cash = get(/databases/$(database)/documents/warungs/$(wid)/cash/current).data;
+          let cash = get(path('cash', 'current')).data;
           return d.seq is int && closingId == string(d.seq)
             && d.closedByUid == request.auth.uid
             && d.openingBalance == cash.openingBalance
@@ -124,20 +156,18 @@ service cloud.firestore {
             && d.purchasesCash is int && d.purchasesCash >= 0
             && d.expenses is int && d.expenses >= 0
             && d.prive is int && d.prive >= 0
+            && d.refunds is int && d.refunds >= 0
             && d.salesCount is int && d.salesCount >= 0
             && d.expected == d.openingBalance + d.salesCash + d.debtCollected
-                             - d.purchasesCash - d.expenses - d.prive
+                             - d.purchasesCash - d.expenses - d.prive - d.refunds
             && d.counted is int && d.counted >= 0
             && d.difference == d.counted - d.expected
             && d.closedAt is timestamp
             && d.createdAt == request.time;
         }
-        function cashUpdatedForThisClosing() {
-          let cash = getAfter(/databases/$(database)/documents/warungs/$(wid)/cash/current).data;
-          return cash.lastTx.kind == 'cashClosings' && cash.lastTx.id == closingId;
-        }
         allow read: if isMember(wid);
-        allow create: if isMember(wid) && validClosing() && cashUpdatedForThisClosing();
+        allow create: if isMember(wid) && validClosing()
+          && linkedTo('cash', 'current', 'cashClosings', closingId);
         // A closing is a record of what was counted. It is never changed.
       }
 
@@ -145,23 +175,162 @@ service cloud.firestore {
         function validSale() {
           let d = request.resource.data;
           return d.cashierUid == request.auth.uid
-            && d.payment == 'cash'
             && d.items is list && d.items.size() > 0 && d.items.size() <= 200
             && d.total is int && d.total >= 0
-            && d.paid is int && d.paid >= d.total
-            && d.change == d.paid - d.total
             && d.occurredAt is timestamp
-            && d.createdAt == request.time;
+            && d.createdAt == request.time
+            && (paidInCash(d) || onCredit(d));
         }
         // The cash counters must be updated for this very sale in the same
         // batch, so a sale can never be saved without its cash.
-        function cashUpdatedForThisSale() {
-          let cash = getAfter(/databases/$(database)/documents/warungs/$(wid)/cash/current).data;
-          return cash.lastTx.kind == 'sales' && cash.lastTx.id == saleId;
+        function paidInCash(d) {
+          return d.payment == 'cash'
+            && d.paid is int && d.paid >= d.total
+            && d.change == d.paid - d.total
+            && linkedTo('cash', 'current', 'sales', saleId);
+        }
+        // Kasbon: nothing is paid now. The customer's balance must grow for
+        // this very sale instead.
+        function onCredit(d) {
+          return d.payment == 'credit'
+            && d.total > 0 && d.paid == 0 && d.change == 0
+            && d.customerId is string
+            && linkedTo('customers', d.customerId, 'sales', saleId);
+        }
+        // Voiding marks the sale; it never rewrites it. The refund move
+        // created in the same batch gives the stock and money back.
+        function voiding() {
+          let next = request.resource.data;
+          return changedOnly(['voided', 'voidedAt', 'voidedByUid', 'voidMoveId'])
+            && resource.data.get('voided', false) == false
+            && next.voided == true
+            && next.voidedByUid == request.auth.uid
+            && createdNow('cashMoves', next.voidMoveId)
+            && after('cashMoves', next.voidMoveId).kind == 'refund'
+            && after('cashMoves', next.voidMoveId).saleId == saleId;
         }
         allow read: if isMember(wid);
-        allow create: if isMember(wid) && validSale() && cashUpdatedForThisSale();
+        allow create: if isMember(wid) && validSale();
+        allow update: if isOwner(wid) && voiding();
+        // History is never deleted.
+      }
+
+      // Every movement of money or goods that is not a sale: stock bought,
+      // supplier debt paid, expenses, prive, kasbon paid back, and refunds.
+      match /cashMoves/{moveId} {
+        function common(d) {
+          return d.createdByUid == request.auth.uid
+            && d.amount is int && d.amount > 0
+            && d.occurredAt is timestamp
+            && d.createdAt == request.time
+            && d.cash is bool;
+        }
+        // Cash that moves in the drawer must be counted. A move may skip the
+        // counters only when no drawer cash moves in the open period: goods
+        // bought on debt, a refund of a kasbon sale, or an entry dated before
+        // the period started (it already showed up as a difference then).
+        function cashAccounted(d) {
+          return d.cash
+            ? linkedTo('cash', 'current', 'cashMoves', moveId)
+            : ((d.kind == 'purchase' && d.paidFrom == 'debt')
+               || (d.kind == 'refund' && d.salePayment == 'credit')
+               || d.occurredAt < get(path('cash', 'current')).data.openedAt);
+        }
+        function purchase(d) {
+          return d.kind == 'purchase'
+            && d.productId is string
+            && d.qty is int && d.qty > 0
+            && (d.paidFrom == 'cash'
+                || (d.paidFrom == 'debt' && !d.cash
+                    && linkedTo('suppliers', d.supplierId, 'cashMoves', moveId)));
+        }
+        function supplierPayment(d) {
+          return d.kind == 'supplierPayment'
+            && linkedTo('suppliers', d.supplierId, 'cashMoves', moveId);
+        }
+        function expense(d) {
+          return d.kind in ['expense', 'prive'] && d.category is string;
+        }
+        function debtPayment(d) {
+          return d.kind == 'debtPayment'
+            && linkedTo('customers', d.customerId, 'cashMoves', moveId);
+        }
+        // Only the owner can void a sale, only once, and only for its total.
+        function refund(d) {
+          let sale = get(path('sales', d.saleId)).data;
+          return d.kind == 'refund'
+            && isOwner(wid)
+            && sale.get('voided', false) == false
+            && after('sales', d.saleId).voided == true
+            && after('sales', d.saleId).voidMoveId == moveId
+            && d.amount == sale.total
+            && d.salePayment == sale.payment
+            && d.cash == (sale.payment == 'cash')
+            && (sale.payment == 'cash'
+                || linkedTo('customers', sale.customerId, 'cashMoves', moveId));
+        }
+        function validMove() {
+          let d = request.resource.data;
+          return common(d) && cashAccounted(d)
+            && (purchase(d) || supplierPayment(d) || expense(d) || debtPayment(d)
+                || refund(d));
+        }
+        allow read: if isMember(wid);
+        allow create: if isMember(wid) && validMove();
         // History is never edited or deleted.
+      }
+
+      // Suppliers and what the warung owes them. The debt only moves with
+      // the purchase or payment that explains it.
+      match /suppliers/{sid} {
+        function debtMove() {
+          let m = after('cashMoves', request.resource.data.lastTx.id);
+          return request.resource.data.lastTx.kind == 'cashMoves'
+            && createdNow('cashMoves', request.resource.data.lastTx.id)
+            && m.supplierId == sid
+            && changedOnly(['debt', 'lastTx', 'updatedAt'])
+            && ((m.kind == 'purchase' && m.paidFrom == 'debt' && movedBy('debt', m.amount))
+                || (m.kind == 'supplierPayment' && movedBy('debt', -m.amount)));
+        }
+        allow read: if isMember(wid);
+        allow create: if isMember(wid)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 60
+          && request.resource.data.debt == 0;
+        allow update: if (isOwner(wid) && changedOnly(['name', 'phone', 'updatedAt']))
+          || (isMember(wid) && debtMove());
+      }
+
+      // Customers who buy on credit (kasbon) and what they owe.
+      match /customers/{cid} {
+        function txId() {
+          return request.resource.data.lastTx.id;
+        }
+        function creditSale() {
+          return request.resource.data.lastTx.kind == 'sales'
+            && createdNow('sales', txId())
+            && after('sales', txId()).payment == 'credit'
+            && after('sales', txId()).customerId == cid
+            && movedBy('balance', after('sales', txId()).total);
+        }
+        function paidBackOrRefunded() {
+          let m = after('cashMoves', txId());
+          return request.resource.data.lastTx.kind == 'cashMoves'
+            && createdNow('cashMoves', txId())
+            && m.customerId == cid
+            && (m.kind == 'debtPayment' || (m.kind == 'refund' && m.salePayment == 'credit'))
+            && movedBy('balance', -m.amount);
+        }
+        allow read: if isMember(wid);
+        allow create: if isMember(wid)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.name.size() <= 60
+          && request.resource.data.balance == 0;
+        allow update: if (isOwner(wid) && changedOnly(['name', 'phone', 'updatedAt']))
+          || (isMember(wid) && changedOnly(['balance', 'lastTx', 'updatedAt'])
+              && (creditSale() || paidBackOrRefunded()));
       }
 
       match /products/{pid} {

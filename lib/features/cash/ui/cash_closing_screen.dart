@@ -202,6 +202,8 @@ class _Summary extends StatelessWidget {
               row('Pengeluaran usaha', cash.expenses, sign: -1),
             if (cash.prive > 0)
               row('Diambil untuk pribadi', cash.prive, sign: -1),
+            if (cash.refunds > 0)
+              row('Penjualan dibatalkan', cash.refunds, sign: -1),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Divider(),

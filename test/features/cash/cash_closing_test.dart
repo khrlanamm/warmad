@@ -56,6 +56,17 @@ void main() {
       expect(closing.difference, 0);
     });
 
+    test('counts refunds for voided sales as cash out', () {
+      const state = CashState(
+        seq: 1,
+        openingBalance: 100000,
+        salesCash: 50000,
+        refunds: 8000,
+      );
+      expect(close(142000, state: state).expected, 142000);
+      expect(close(142000, state: state).toMap()['refunds'], 8000);
+    });
+
     test('closes the period it was built from', () {
       expect(close(1240000).seq, 7);
     });
@@ -77,7 +88,8 @@ void main() {
             map['debtCollected'] -
             map['purchasesCash'] -
             map['expenses'] -
-            map['prive'],
+            map['prive'] -
+            map['refunds'],
       );
       expect(map['difference'], map['counted'] - map['expected']);
       expect(map['closedByUid'], 'u1');

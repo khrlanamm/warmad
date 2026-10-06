@@ -19,7 +19,7 @@ const closingPath = (seq: number | string) => `warungs/${WARUNG}/cashClosings/${
 // The open period from the "Tutup kas harian" design.
 const open = {
   seq: 1, openingBalance: 500000, salesCash: 979400, debtCollected: 0,
-  purchasesCash: 134400, expenses: 100000, prive: 0, salesCount: 47,
+  purchasesCash: 134400, expenses: 100000, prive: 0, refunds: 0, salesCount: 47,
 };
 
 function closing(uid: string, counted: number, overrides: Record<string, unknown> = {}) {
@@ -31,11 +31,12 @@ function closing(uid: string, counted: number, overrides: Record<string, unknown
     purchasesCash: open.purchasesCash,
     expenses: open.expenses,
     prive: open.prive,
+    refunds: open.refunds,
     salesCount: open.salesCount,
     ...overrides,
   } as Record<string, number>;
   const expected = figures.openingBalance + figures.salesCash + figures.debtCollected -
-    figures.purchasesCash - figures.expenses - figures.prive;
+    figures.purchasesCash - figures.expenses - figures.prive - figures.refunds;
   return {
     ...figures,
     expected,
@@ -66,6 +67,7 @@ function closeBatch(db: Firestore, uid: string, counted = 1240000, options: {
     purchasesCash: increment(-(data.purchasesCash as number)),
     expenses: increment(-(data.expenses as number)),
     prive: increment(-(data.prive as number)),
+    refunds: increment(-(data.refunds as number)),
     salesCount: increment(-(data.salesCount as number)),
     openingBalance: data.counted,
     seq: increment(1),
@@ -107,7 +109,7 @@ describe("closing the cash period", () => {
     // The counted cash, not the expected cash, opens the next period.
     expect(await read(cashPath)).toMatchObject({
       seq: 2, openingBalance: 1240000, salesCash: 0, purchasesCash: 0,
-      expenses: 0, prive: 0, salesCount: 0,
+      expenses: 0, prive: 0, refunds: 0, salesCount: 0,
     });
   });
 

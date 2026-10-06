@@ -10,10 +10,14 @@ import '../features/buyer/ui/buyer_shell.dart';
 import '../features/cash/ui/cash_closing_screen.dart';
 import '../features/cash/ui/cash_history_screen.dart';
 import '../features/home/ui/home_screen.dart';
+import '../features/ledger/ui/expense_screen.dart';
+import '../features/ledger/ui/parties_screen.dart';
+import '../features/ledger/ui/restock_screen.dart';
 import '../features/onboarding/ui/loading_screen.dart';
 import '../features/onboarding/ui/role_selection_screen.dart';
 import '../features/onboarding/ui/warung_setup_screen.dart';
 import '../features/pos/ui/pos_screen.dart';
+import '../features/pos/ui/sales_history_screen.dart';
 import '../features/products/ui/product_form_screen.dart';
 import '../features/products/ui/stock_list_screen.dart';
 import '../features/profile/data/profile_repository.dart';
@@ -36,6 +40,11 @@ abstract final class Routes {
   static const warungAccount = '/warung/akun';
   static const warungCashClosing = '/warung/tutup-kas';
   static const warungCashHistory = '/warung/riwayat-kas';
+  static const warungRestock = '/warung/barang-masuk';
+  static const warungExpense = '/warung/pengeluaran';
+  static const warungSuppliers = '/warung/pemasok';
+  static const warungCustomers = '/warung/kasbon';
+  static const warungSales = '/warung/penjualan';
 
   static const buyer = '/pembeli';
   static const buyerSearch = '/pembeli/cari';
@@ -128,6 +137,31 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'riwayat-kas',
                     parentNavigatorKey: rootKey,
                     builder: (_, _) => const CashHistoryScreen(),
+                  ),
+                  GoRoute(
+                    path: 'barang-masuk',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const RestockScreen(),
+                  ),
+                  GoRoute(
+                    path: 'pengeluaran',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const ExpenseScreen(),
+                  ),
+                  GoRoute(
+                    path: 'pemasok',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const SuppliersScreen(),
+                  ),
+                  GoRoute(
+                    path: 'kasbon',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const CustomersScreen(),
+                  ),
+                  GoRoute(
+                    path: 'penjualan',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const SalesHistoryScreen(),
                   ),
                 ],
               ),

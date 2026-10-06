@@ -7,8 +7,11 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/money.dart';
+import '../../../core/widgets/form_widgets.dart';
 import '../../../core/widgets/money_field.dart';
 import '../../auth/data/auth_service.dart';
+import '../../ledger/data/ledger_repository.dart';
+import '../../ledger/domain/cash_move.dart';
 import '../../products/data/product_repository.dart';
 import '../../products/domain/product.dart';
 import '../../products/ui/barcode_scanner_screen.dart';
@@ -64,14 +67,36 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     _message('${product.name} ditambahkan.');
   }
 
-  void _pay(Cart cart) {
+  /// Kasbon: the customer takes the goods now and pays later.
+  Future<void> _sellOnCredit(Cart cart) async {
+    final warungId = ref.read(membershipProvider).value?.warungId;
+    if (warungId == null) return;
+    final customer = await showPickerSheet<Customer>(
+      context,
+      title: 'Kasbon untuk siapa?',
+      items: ref.read(customersProvider).value ?? const [],
+      label: (customer) => customer.name,
+      detail: (customer) => customer.balance > 0
+          ? 'Kasbon ${formatRupiah(customer.balance)}'
+          : 'Lunas',
+      searchHint: 'Cari atau ketik nama pelanggan',
+      onAdd: (name) => Customer(
+        id: ref.read(ledgerRepositoryProvider).addCustomer(warungId, name),
+        name: name,
+      ),
+    );
+    if (customer == null || !mounted) return;
+    _pay(cart, customer: customer);
+  }
+
+  void _pay(Cart cart, {Customer? customer}) {
     final user = ref.read(authServiceProvider).currentUser;
     final warungId = ref.read(membershipProvider).value?.warungId;
     if (user == null || warungId == null) return;
 
     // An empty field means the customer paid the exact amount.
     final paid = parseRupiah(_paid.text) ?? cart.total;
-    if (paid < cart.total) return;
+    if (customer == null && paid < cart.total) return;
 
     final repository = ref.read(saleRepositoryProvider);
     final sale = Sale.fromCart(
@@ -81,6 +106,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       cashierUid: user.uid,
       cashierName: user.displayName ?? user.email ?? 'Kasir',
       now: DateTime.now(),
+      customerId: customer?.id,
+      customerName: customer?.name,
     );
 
     // Not awaited: the sale is in the local cache at once and syncs when
@@ -105,7 +132,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     _paid.clear();
     FocusScope.of(context).unfocus();
     _message(
-      sale.change > 0
+      customer != null
+          ? 'Tersimpan sebagai kasbon ${customer.name}.'
+          : sale.change > 0
           ? 'Tersimpan. Kembalian ${formatRupiah(sale.change)}'
           : 'Tersimpan. Uang pas.',
     );
@@ -229,7 +258,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                   ),
           ),
           if (!cart.isEmpty)
-            _Checkout(cart: cart, paid: _paid, onPay: () => _pay(cart)),
+            _Checkout(
+              cart: cart,
+              paid: _paid,
+              onPay: () => _pay(cart),
+              onCredit: () => _sellOnCredit(cart),
+            ),
         ],
       ),
     );
@@ -323,11 +357,13 @@ class _Checkout extends StatefulWidget {
     required this.cart,
     required this.paid,
     required this.onPay,
+    required this.onCredit,
   });
 
   final Cart cart;
   final TextEditingController paid;
   final VoidCallback onPay;
+  final VoidCallback onCredit;
 
   @override
   State<_Checkout> createState() => _CheckoutState();
@@ -432,9 +468,24 @@ class _CheckoutState extends State<_Checkout> {
               ],
             ),
             const SizedBox(height: 12),
-            FilledButton(
-              onPressed: enough ? widget.onPay : null,
-              child: Text('Bayar ${formatRupiah(total)}'),
+            Row(
+              children: [
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 56),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                  ),
+                  onPressed: widget.onCredit,
+                  child: const Text('Kasbon'),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: enough ? widget.onPay : null,
+                    child: Text('Bayar ${formatRupiah(total)}'),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

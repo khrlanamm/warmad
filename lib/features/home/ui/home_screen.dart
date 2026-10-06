@@ -6,11 +6,11 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../app/router.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
-import '../../../core/dates.dart';
 import '../../../core/money.dart';
 import '../../../core/widgets/terpal_card.dart';
 import '../../pos/data/sale_repository.dart';
 import '../../pos/domain/sale.dart';
+import '../../pos/ui/sales_history_screen.dart';
 import '../../products/data/product_repository.dart';
 import '../../products/domain/product.dart';
 import '../../warung/data/warung_repository.dart';
@@ -53,6 +53,34 @@ class HomeScreen extends ConsumerWidget {
             Text(warung?.name ?? '', style: theme.textTheme.headlineMedium),
             const SizedBox(height: 16),
             _CashCard(cash: cash),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _QuickAction(
+                    icon: LucideIcons.shoppingCart,
+                    label: 'Jual',
+                    onTap: () => context.go(Routes.warungPos),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _QuickAction(
+                    icon: LucideIcons.download,
+                    label: 'Barang masuk',
+                    onTap: () => context.push(Routes.warungRestock),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _QuickAction(
+                    icon: LucideIcons.wallet,
+                    label: 'Pengeluaran',
+                    onTap: () => context.push(Routes.warungExpense),
+                  ),
+                ),
+              ],
+            ),
             if (low.isNotEmpty) ...[
               const SizedBox(height: 12),
               _LowStockBanner(products: low),
@@ -68,8 +96,18 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
-            Text('Transaksi terakhir', style: theme.textTheme.titleLarge),
-            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Transaksi terakhir', style: theme.textTheme.titleLarge),
+                if (sales.isNotEmpty)
+                  TextButton(
+                    onPressed: () => context.push(Routes.warungSales),
+                    child: const Text('Lihat semua'),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
             if (sales.isEmpty)
               Text(
                 'Belum ada penjualan. Catat penjualan pertama di menu Kasir.',
@@ -79,11 +117,21 @@ class HomeScreen extends ConsumerWidget {
               )
             else
               Card(
+                clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: [
                     for (final (index, sale) in sales.indexed) ...[
                       if (index > 0) const Divider(),
-                      _SaleTile(sale: sale),
+                      InkWell(
+                        onTap: () => showSaleDetail(context, sale),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: SaleSummaryRow(sale: sale),
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -205,57 +253,47 @@ class _LowStockBanner extends StatelessWidget {
   }
 }
 
-class _SaleTile extends StatelessWidget {
-  const _SaleTile({required this.sale});
+class _QuickAction extends StatelessWidget {
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
-  final Sale sale;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              color: AppColors.greenTint,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(9),
-              child: Icon(
-                LucideIcons.shoppingCart,
-                size: 20,
-                color: AppColors.green,
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+          child: Column(
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColors.greenTint,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(9),
+                  child: Icon(icon, size: 22, color: AppColors.green),
+                ),
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: AppText.body(14, weight: FontWeight.w600),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Penjualan, ${sale.itemCount} barang',
-                  style: theme.textTheme.bodyLarge,
-                ),
-                Text(
-                  formatClock(sale.occurredAt),
-                  style: theme.textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-          Text(
-            formatRupiah(sale.total, showPlus: true),
-            style: AppText.body(
-              16,
-              weight: FontWeight.w700,
-              color: AppColors.green,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

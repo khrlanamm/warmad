@@ -14,6 +14,7 @@ class CashClosing {
     required this.expenses,
     required this.prive,
     required this.salesCount,
+    this.refunds = 0,
     required this.counted,
     required this.closedByUid,
     required this.closedByName,
@@ -39,6 +40,7 @@ class CashClosing {
       purchasesCash: cash.purchasesCash,
       expenses: cash.expenses,
       prive: cash.prive,
+      refunds: cash.refunds,
       salesCount: cash.salesCount,
       counted: counted,
       closedByUid: closedByUid,
@@ -62,6 +64,7 @@ class CashClosing {
       purchasesCash: amount('purchasesCash'),
       expenses: amount('expenses'),
       prive: amount('prive'),
+      refunds: amount('refunds'),
       salesCount: amount('salesCount'),
       counted: amount('counted'),
       closedByUid: data['closedByUid'] as String? ?? '',
@@ -79,6 +82,7 @@ class CashClosing {
   final int purchasesCash;
   final int expenses;
   final int prive;
+  final int refunds;
   final int salesCount;
 
   /// Cash actually found in the drawer. It opens the next period.
@@ -95,7 +99,8 @@ class CashClosing {
       debtCollected -
       purchasesCash -
       expenses -
-      prive;
+      prive -
+      refunds;
 
   /// Negative when cash is missing, positive when there is too much.
   int get difference => counted - expected;
@@ -109,6 +114,7 @@ class CashClosing {
     'purchasesCash': purchasesCash,
     'expenses': expenses,
     'prive': prive,
+    'refunds': refunds,
     'salesCount': salesCount,
     'expected': expected,
     'counted': counted,

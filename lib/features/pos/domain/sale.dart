@@ -45,12 +45,18 @@ class Sale {
     required this.cashierUid,
     required this.cashierName,
     required this.occurredAt,
+    this.customerId,
+    this.customerName,
+    this.voided = false,
   });
 
   /// Builds the sale for what is in [cart].
   ///
-  /// Throws [ArgumentError] when the cart is empty or [paid] does not cover
-  /// the total, so an incomplete sale can never be saved.
+  /// Pass [customerId] and [customerName] for a kasbon sale: nothing is paid
+  /// now and the total is added to what that customer owes.
+  ///
+  /// Throws [ArgumentError] when the cart is empty or, for a cash sale, when
+  /// [paid] does not cover the total, so an incomplete sale is never saved.
   factory Sale.fromCart({
     required String id,
     required Cart cart,
@@ -58,9 +64,14 @@ class Sale {
     required String cashierUid,
     required String cashierName,
     required DateTime now,
+    String? customerId,
+    String? customerName,
   }) {
+    final onCredit = customerId != null;
     if (cart.isEmpty) throw ArgumentError('The cart is empty.');
-    if (paid < cart.total) throw ArgumentError('Paid less than the total.');
+    if (!onCredit && paid < cart.total) {
+      throw ArgumentError('Paid less than the total.');
+    }
     return Sale(
       id: id,
       items: [
@@ -73,10 +84,12 @@ class Sale {
           ),
       ],
       total: cart.total,
-      paid: paid,
+      paid: onCredit ? 0 : paid,
       cashierUid: cashierUid,
       cashierName: cashierName,
       occurredAt: now,
+      customerId: customerId,
+      customerName: customerName,
     );
   }
 
@@ -95,6 +108,11 @@ class Sale {
     cashierUid: data['cashierUid'] as String? ?? '',
     cashierName: data['cashierName'] as String? ?? '',
     occurredAt: occurredAt,
+    customerId: data['payment'] == 'credit'
+        ? data['customerId'] as String?
+        : null,
+    customerName: data['customerName'] as String?,
+    voided: data['voided'] as bool? ?? false,
   );
 
   final String id;
@@ -108,7 +126,19 @@ class Sale {
   /// `createdAt`, which is later when the sale was made offline.
   final DateTime occurredAt;
 
-  int get change => paid - total;
+  /// Set for a kasbon sale.
+  final String? customerId;
+  final String? customerName;
+
+  /// True once the owner has voided the sale. The sale itself is kept.
+  final bool voided;
+
+  /// Sold on credit (kasbon) instead of paid in cash.
+  bool get onCredit => customerId != null;
+
+  String get payment => onCredit ? 'credit' : 'cash';
+
+  int get change => onCredit ? 0 : paid - total;
 
   /// Number of pieces sold.
   int get itemCount => items.fold(0, (sum, item) => sum + item.qty);
@@ -119,7 +149,9 @@ class Sale {
     'total': total,
     'paid': paid,
     'change': change,
-    'payment': 'cash',
+    'payment': payment,
+    if (onCredit) 'customerId': customerId,
+    if (onCredit) 'customerName': customerName,
     'cashierUid': cashierUid,
     'cashierName': cashierName,
     'dayKey': dayKeyOf(occurredAt),

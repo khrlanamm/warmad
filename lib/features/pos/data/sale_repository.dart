@@ -42,7 +42,7 @@ class SaleRepository {
       _warung(warungId).collection('sales').doc().id;
 
   /// Saves [sale], takes its items out of stock and adds its total to the
-  /// cash counters, as one batch.
+  /// cash counters (or to the customer's balance for kasbon), as one batch.
   ///
   /// A batch is atomic on the server and works offline, where it is applied
   /// to the local cache at once and queued. `increment` keeps stock and cash
@@ -66,12 +66,22 @@ class SaleRepository {
         'updatedAt': FieldValue.serverTimestamp(),
       });
     }
-    batch.update(warung.collection('cash').doc('current'), {
-      'salesCash': FieldValue.increment(sale.total),
-      'salesCount': FieldValue.increment(1),
-      // Security Rules use this to check the counters against the sale.
-      'lastTx': {'kind': 'sales', 'id': sale.id},
-    });
+    // Security Rules use `lastTx` to check the amounts against the sale.
+    final lastTx = {'kind': 'sales', 'id': sale.id};
+    if (sale.onCredit) {
+      // Kasbon: no cash comes in. The customer owes the total instead.
+      batch.update(warung.collection('customers').doc(sale.customerId), {
+        'balance': FieldValue.increment(sale.total),
+        'lastTx': lastTx,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } else {
+      batch.update(warung.collection('cash').doc('current'), {
+        'salesCash': FieldValue.increment(sale.total),
+        'salesCount': FieldValue.increment(1),
+        'lastTx': lastTx,
+      });
+    }
     return batch.commit();
   }
 

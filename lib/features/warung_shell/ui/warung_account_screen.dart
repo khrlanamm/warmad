@@ -123,10 +123,32 @@ class WarungAccountScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           Card(
             clipBehavior: Clip.antiAlias,
-            child: ListTile(
-              title: const Text('Riwayat tutup kas'),
-              trailing: const Icon(LucideIcons.chevronRight),
-              onTap: () => context.push(Routes.warungCashHistory),
+            child: Column(
+              children: [
+                ListTile(
+                  title: const Text('Kasbon pelanggan'),
+                  trailing: const Icon(LucideIcons.chevronRight),
+                  onTap: () => context.push(Routes.warungCustomers),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Pemasok dan utang'),
+                  trailing: const Icon(LucideIcons.chevronRight),
+                  onTap: () => context.push(Routes.warungSuppliers),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Riwayat penjualan'),
+                  trailing: const Icon(LucideIcons.chevronRight),
+                  onTap: () => context.push(Routes.warungSales),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Riwayat tutup kas'),
+                  trailing: const Icon(LucideIcons.chevronRight),
+                  onTap: () => context.push(Routes.warungCashHistory),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 20),

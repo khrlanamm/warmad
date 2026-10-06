@@ -59,6 +59,7 @@ export const createWarung = onCall(async (request) => {
       purchasesCash: 0,
       expenses: 0,
       prive: 0,
+      refunds: 0,
       salesCount: 0,
     });
     tx.set(userRef, {

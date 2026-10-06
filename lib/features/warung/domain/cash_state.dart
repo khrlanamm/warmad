@@ -11,6 +11,7 @@ class CashState {
     this.purchasesCash = 0,
     this.expenses = 0,
     this.prive = 0,
+    this.refunds = 0,
     this.salesCount = 0,
     this.openedAt,
   });
@@ -25,6 +26,7 @@ class CashState {
       purchasesCash: amount('purchasesCash'),
       expenses: amount('expenses'),
       prive: amount('prive'),
+      refunds: amount('refunds'),
       salesCount: amount('salesCount'),
       openedAt: openedAt,
     );
@@ -52,11 +54,14 @@ class CashState {
   /// a business cost.
   final int prive;
 
+  /// Money handed back for voided cash sales.
+  final int refunds;
+
   final int salesCount;
   final DateTime? openedAt;
 
   int get cashIn => salesCash + debtCollected;
-  int get cashOut => purchasesCash + expenses + prive;
+  int get cashOut => purchasesCash + expenses + prive + refunds;
 
   /// What should be in the drawer according to the records.
   int get expected => openingBalance + cashIn - cashOut;
