@@ -13,6 +13,7 @@ import '../features/home/ui/home_screen.dart';
 import '../features/ledger/ui/expense_screen.dart';
 import '../features/ledger/ui/parties_screen.dart';
 import '../features/ledger/ui/restock_screen.dart';
+import '../features/notifications/ui/notifications_screen.dart';
 import '../features/onboarding/ui/loading_screen.dart';
 import '../features/onboarding/ui/role_selection_screen.dart';
 import '../features/onboarding/ui/warung_setup_screen.dart';
@@ -50,6 +51,7 @@ abstract final class Routes {
   static const warungSuppliers = '/warung/pemasok';
   static const warungCustomers = '/warung/kasbon';
   static const warungSales = '/warung/penjualan';
+  static const warungNotifications = '/warung/notifikasi';
 
   static const buyer = '/pembeli';
   static const buyerSearch = '/pembeli/cari';
@@ -169,6 +171,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'penjualan',
                     parentNavigatorKey: rootKey,
                     builder: (_, _) => const SalesHistoryScreen(),
+                  ),
+                  GoRoute(
+                    path: 'notifikasi',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const NotificationsScreen(),
                   ),
                 ],
               ),

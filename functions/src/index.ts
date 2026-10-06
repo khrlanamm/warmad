@@ -10,3 +10,4 @@ export {createWarung} from "./warung/createWarung";
 export {onProductWritten} from "./products/onProductWritten";
 export {onCashMoveCreated, onSaleCreated} from "./reports/triggers";
 export {recomputeInventory} from "./inventory/recompute";
+export {cashClosingReminder, onCashClosingCreated} from "./notifications/triggers";

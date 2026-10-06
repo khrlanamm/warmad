@@ -42,7 +42,12 @@ class AuthService {
     return _auth.signInWithCredential(credential);
   }
 
+  /// Runs just before sign out, while the account can still clean up after
+  /// itself (for example remove its push token).
+  Future<void> Function()? beforeSignOut;
+
   Future<void> signOut() async {
+    await beforeSignOut?.call();
     await _ensureInitialized();
     await _googleSignIn.signOut();
     await _auth.signOut();

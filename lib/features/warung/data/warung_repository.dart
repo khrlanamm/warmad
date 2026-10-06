@@ -61,6 +61,17 @@ class WarungRepository {
     await auth.currentUser?.getIdToken(true);
   }
 
+  /// Sets the daily cash closing reminder to [time] ("HH:mm", on a quarter
+  /// hour), or turns it off with null.
+  Future<void> setCashReminder(String id, String? time) {
+    return settleWrite(
+      _warung(id).update({
+        'cashReminderTime': time,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }),
+    );
+  }
+
   Future<void> setShowOnMap(String id, bool value) {
     return settleWrite(
       _warung(

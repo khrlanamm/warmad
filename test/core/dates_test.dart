@@ -1,7 +1,35 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:warmad/core/date_labels.dart';
 import 'package:warmad/core/dates.dart';
 
 void main() {
+  group('formatRelative', () {
+    final now = DateTime(2026, 9, 29, 14, 32);
+
+    test('uses minutes, then hours', () {
+      expect(formatRelative(now, now), 'Baru saja');
+      expect(
+        formatRelative(now.subtract(const Duration(minutes: 10)), now),
+        '10 menit lalu',
+      );
+      expect(
+        formatRelative(now.subtract(const Duration(hours: 3)), now),
+        '3 jam lalu',
+      );
+    });
+  });
+
+  group('dayGroupOf', () {
+    final now = DateTime(2026, 9, 29, 0, 30);
+
+    test('groups by calendar day, not by hours elapsed', () {
+      expect(dayGroupOf(DateTime(2026, 9, 29, 0, 5), now), 'Hari ini');
+      // Only an hour ago, but on the previous day.
+      expect(dayGroupOf(DateTime(2026, 9, 28, 23, 41), now), 'Kemarin');
+      expect(dayGroupOf(DateTime(2026, 9, 27, 7), now), 'Sebelumnya');
+    });
+  });
+
   test('dayKeyOf pads month and day', () {
     expect(dayKeyOf(DateTime(2026, 9, 29, 14, 32)), '2026-09-29');
     expect(dayKeyOf(DateTime(2026, 1, 5)), '2026-01-05');

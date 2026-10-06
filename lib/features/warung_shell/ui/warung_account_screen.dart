@@ -20,6 +20,58 @@ class WarungAccountScreen extends ConsumerWidget {
     return words.take(2).map((w) => w[0].toUpperCase()).join();
   }
 
+  /// Lets the owner pick the reminder time or turn it off. The time snaps
+  /// to a quarter hour, which is how often the server checks.
+  Future<void> _editReminder(
+    BuildContext context,
+    WidgetRef ref,
+    String warungId,
+    String? current,
+  ) async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: AppColors.cream,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(LucideIcons.clock),
+              title: const Text('Pilih jam pengingat'),
+              onTap: () => Navigator.of(context).pop('pick'),
+            ),
+            if (current != null)
+              ListTile(
+                leading: const Icon(LucideIcons.bellOff),
+                title: const Text('Matikan pengingat'),
+                onTap: () => Navigator.of(context).pop('off'),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (choice == null || !context.mounted) return;
+
+    final repository = ref.read(warungRepositoryProvider);
+    if (choice == 'off') {
+      await repository.setCashReminder(warungId, null);
+      return;
+    }
+    final parts = (current ?? '21:00').split(':').map(int.parse).toList();
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: parts[0], minute: parts[1]),
+      helpText: 'Ingatkan tutup kas pada jam',
+    );
+    if (picked == null) return;
+    final minute = (picked.minute ~/ 15) * 15;
+    await repository.setCashReminder(
+      warungId,
+      '${picked.hour.toString().padLeft(2, '0')}:'
+      '${minute.toString().padLeft(2, '0')}',
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -109,14 +161,35 @@ class WarungAccountScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Card(
-              child: ListTile(
-                title: const Text('Jam buka'),
-                trailing: Text(
-                  warung.hours.label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.inkMuted,
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text('Jam buka'),
+                    trailing: Text(
+                      warung.hours.label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.inkMuted,
+                      ),
+                    ),
                   ),
-                ),
+                  const Divider(),
+                  ListTile(
+                    title: const Text('Pengingat tutup kas'),
+                    trailing: Text(
+                      warung.cashReminderTime?.replaceAll(':', '.') ?? 'Mati',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.inkMuted,
+                      ),
+                    ),
+                    onTap: () => _editReminder(
+                      context,
+                      ref,
+                      warung.id,
+                      warung.cashReminderTime,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

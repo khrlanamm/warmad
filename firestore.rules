@@ -42,6 +42,14 @@ service cloud.firestore {
       allow update: if isSelf(uid)
         && changedOnly(['displayName', 'email', 'photoURL', 'mode', 'updatedAt'])
         && validProfile();
+
+      // Push tokens of the phones this account is signed in on.
+      match /devices/{deviceId} {
+        allow read, delete: if isSelf(uid);
+        allow create, update: if isSelf(uid)
+          && request.resource.data.token is string
+          && request.resource.data.keys().hasOnly(['token', 'platform', 'updatedAt']);
+      }
     }
 
     // Shared catalog of goods. Entries are created by Cloud Functions.
@@ -331,6 +339,14 @@ service cloud.firestore {
         allow update: if (isOwner(wid) && changedOnly(['name', 'phone', 'updatedAt']))
           || (isMember(wid) && changedOnly(['balance', 'lastTx', 'updatedAt'])
               && (creditSale() || paidBackOrRefunded()));
+      }
+
+      // The owner's notification list, written by Cloud Functions. The
+      // owner can only mark entries as read.
+      match /notifications/{notificationId} {
+        allow read: if isOwner(wid);
+        allow update: if isOwner(wid) && changedOnly(['read'])
+          && request.resource.data.read == true;
       }
 
       // Per-day report documents, written by Cloud Functions. Reports are

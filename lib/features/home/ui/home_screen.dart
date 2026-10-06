@@ -8,11 +8,13 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/money.dart';
 import '../../../core/widgets/terpal_card.dart';
+import '../../notifications/data/notification_repository.dart';
 import '../../pos/data/sale_repository.dart';
 import '../../pos/domain/sale.dart';
 import '../../pos/ui/sales_history_screen.dart';
 import '../../products/data/product_repository.dart';
 import '../../products/domain/product.dart';
+import '../../profile/data/profile_repository.dart';
 import '../../warung/data/warung_repository.dart';
 import '../../warung/domain/cash_state.dart';
 
@@ -33,6 +35,8 @@ class HomeScreen extends ConsumerWidget {
     final warung = ref.watch(currentWarungProvider).value;
     final cash = ref.watch(cashStateProvider).value;
     final sales = ref.watch(recentSalesProvider).value ?? const <Sale>[];
+    final isOwner = ref.watch(membershipProvider).value?.isOwner ?? false;
+    final unread = ref.watch(unreadNotificationsProvider);
     final low =
         (ref.watch(productsProvider).value ?? const <Product>[])
             .where((p) => p.active && p.status != StockStatus.aman)
@@ -44,13 +48,40 @@ class HomeScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Text(
-              _greeting(DateTime.now().hour),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.inkMuted,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _greeting(DateTime.now().hour),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.inkMuted,
+                        ),
+                      ),
+                      Text(
+                        warung?.name ?? '',
+                        style: theme.textTheme.headlineMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                if (isOwner)
+                  IconButton.outlined(
+                    tooltip: unread > 0
+                        ? 'Notifikasi, $unread belum dibaca'
+                        : 'Notifikasi',
+                    onPressed: () => context.push(Routes.warungNotifications),
+                    icon: Badge(
+                      isLabelVisible: unread > 0,
+                      backgroundColor: AppColors.yellow,
+                      smallSize: 9,
+                      child: const Icon(LucideIcons.bell),
+                    ),
+                  ),
+              ],
             ),
-            Text(warung?.name ?? '', style: theme.textTheme.headlineMedium),
             const SizedBox(height: 16),
             _CashCard(cash: cash),
             const SizedBox(height: 12),
