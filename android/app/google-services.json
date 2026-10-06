@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "333384451945",
+    "project_id": "warrung-madura",
+    "storage_bucket": "warrung-madura.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333384451945:android:ab1581b18770dd6b469ff8",
+        "android_client_info": {
+          "package_name": "com.benevology.warmad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "333384451945-1113somn61puqvijnq5dtiuvtqmtj82m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.benevology.warmad",
+            "certificate_hash": "690d8f9d54a6356d8e87cb01a82f03197490371d"
+          }
+        },
+        {
+          "client_id": "333384451945-o1ko2g9nsvkrr0dmev11r8j76bi7gnor.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.benevology.warmad",
+            "certificate_hash": "3edb5be20862f657f166e3734cb6f5cedba2a1be"
+          }
+        },
+        {
+          "client_id": "333384451945-q15nv1n7rvt254vimcho60m2audod3d0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxEZTb-8yZCQpyGaD89Yn9HSs09cOBXTM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "333384451945-q15nv1n7rvt254vimcho60m2audod3d0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
