@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme/app_colors.dart';
@@ -9,6 +10,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../auth/data/auth_service.dart';
 import '../../profile/data/profile_repository.dart';
 import '../../profile/domain/user_profile.dart';
+import '../../profile/ui/delete_account_button.dart';
 import '../../warung/data/warung_repository.dart';
 
 /// Akun dan warung: warung profile, map visibility, and account actions.
@@ -250,6 +252,16 @@ class WarungAccountScreen extends ConsumerWidget {
             icon: const Icon(LucideIcons.logOut),
             label: const Text('Keluar akun'),
           ),
+          const SizedBox(height: 4),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: AppColors.inkMuted),
+            onPressed: () => launchUrl(
+              Uri.parse('https://warrung-madura.web.app/privasi'),
+              mode: LaunchMode.externalApplication,
+            ),
+            child: const Text('Kebijakan privasi'),
+          ),
+          const DeleteAccountButton(),
         ],
       ),
     );

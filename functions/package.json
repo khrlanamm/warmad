@@ -9,7 +9,8 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "vitest run",
-    "test:rules": "cd .. && firebase emulators:exec --only firestore,auth --project demo-warmad \"npm --prefix functions test\""
+    "test:rules": "cd .. && firebase emulators:exec --only firestore,auth --project demo-warmad \"npm --prefix functions test\"",
+    "seed:demo": "npm run build && node scripts/seedCatalog.mjs && node scripts/seedWarungProducts.mjs \"$OWNER_EMAIL\" && node scripts/seedHistory.mjs \"$OWNER_EMAIL\" && node scripts/backfillReports.mjs \"$OWNER_EMAIL\" && node scripts/recomputeInventory.mjs \"$OWNER_EMAIL\" && node scripts/syncPublic.mjs \"$OWNER_EMAIL\" && node scripts/seedNeighbors.mjs"
   },
   "dependencies": {
     "firebase-admin": "^14.5.0",

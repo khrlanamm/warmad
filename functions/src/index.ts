@@ -13,3 +13,4 @@ export {recomputeInventory} from "./inventory/recompute";
 export {cashClosingReminder, onCashClosingCreated} from "./notifications/triggers";
 export {acceptInvite, createInvite, removeMember} from "./members/callables";
 export {onWarungWritten} from "./public/sync";
+export {deleteAccount} from "./account/deleteAccount";
