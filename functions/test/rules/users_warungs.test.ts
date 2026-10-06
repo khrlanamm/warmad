@@ -110,7 +110,7 @@ describe("warungs", () => {
     await assertFails(setDoc(doc(db, `warungs/${WARUNG}/members/buyer`), {role: "owner"}));
   });
 
-  it("blocks direct writes to the cash counters for now", async () => {
+  it("blocks direct writes to the cash counters", async () => {
     await assertFails(updateDoc(doc(owner(env), `warungs/${WARUNG}/cash/current`), {openingBalance: 0}));
   });
 });

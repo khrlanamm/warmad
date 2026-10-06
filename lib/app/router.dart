@@ -11,6 +11,7 @@ import '../features/home/ui/home_screen.dart';
 import '../features/onboarding/ui/loading_screen.dart';
 import '../features/onboarding/ui/role_selection_screen.dart';
 import '../features/onboarding/ui/warung_setup_screen.dart';
+import '../features/pos/ui/pos_screen.dart';
 import '../features/products/ui/product_form_screen.dart';
 import '../features/products/ui/stock_list_screen.dart';
 import '../features/profile/data/profile_repository.dart';
@@ -120,10 +121,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.warungPos,
-                builder: (_, _) => const ComingSoon(
-                  title: 'Kasir',
-                  icon: LucideIcons.shoppingCart,
-                ),
+                builder: (_, _) => const PosScreen(),
               ),
             ],
           ),

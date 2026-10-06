@@ -61,8 +61,53 @@ service cloud.firestore {
         allow read: if isMember(wid);
       }
 
+      // Running counters of the open cash period. A counter can only move
+      // together with the transaction that explains it: the same batch must
+      // create that transaction, and the amounts must agree. This is what
+      // keeps "stock went down" and "cash went up" one inseparable step.
       match /cash/current {
+        function tx(kind) {
+          return getAfter(/databases/$(database)/documents/warungs/$(wid)/$(kind)/$(request.resource.data.lastTx.id));
+        }
+        function createdInThisBatch(kind) {
+          return !exists(/databases/$(database)/documents/warungs/$(wid)/$(kind)/$(request.resource.data.lastTx.id))
+            && existsAfter(/databases/$(database)/documents/warungs/$(wid)/$(kind)/$(request.resource.data.lastTx.id));
+        }
+        function movedBy(field, amount) {
+          return request.resource.data[field] == resource.data[field] + amount;
+        }
+        function cashSale() {
+          return request.resource.data.lastTx.kind == 'sales'
+            && createdInThisBatch('sales')
+            && changedOnly(['salesCash', 'salesCount', 'lastTx'])
+            && movedBy('salesCash', tx('sales').data.total)
+            && movedBy('salesCount', 1);
+        }
         allow read: if isMember(wid);
+        allow update: if isMember(wid) && cashSale();
+      }
+
+      match /sales/{saleId} {
+        function validSale() {
+          let d = request.resource.data;
+          return d.cashierUid == request.auth.uid
+            && d.payment == 'cash'
+            && d.items is list && d.items.size() > 0 && d.items.size() <= 200
+            && d.total is int && d.total >= 0
+            && d.paid is int && d.paid >= d.total
+            && d.change == d.paid - d.total
+            && d.occurredAt is timestamp
+            && d.createdAt == request.time;
+        }
+        // The cash counters must be updated for this very sale in the same
+        // batch, so a sale can never be saved without its cash.
+        function cashUpdatedForThisSale() {
+          let cash = getAfter(/databases/$(database)/documents/warungs/$(wid)/cash/current).data;
+          return cash.lastTx.kind == 'sales' && cash.lastTx.id == saleId;
+        }
+        allow read: if isMember(wid);
+        allow create: if isMember(wid) && validSale() && cashUpdatedForThisSale();
+        // History is never edited or deleted.
       }
 
       match /products/{pid} {
