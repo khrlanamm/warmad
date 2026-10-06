@@ -57,6 +57,17 @@ service cloud.firestore {
       allow read: if signedIn();
     }
 
+    // What buyers see: a warung that chose to be on the map, and for each
+    // of its goods only "tersedia", "terbatas" or "habis". Written by Cloud
+    // Functions from the private data; no stock counts, prices, cash or
+    // names of staff ever land here.
+    match /publicWarungs/{wid} {
+      allow read: if signedIn();
+      match /items/{catalogId} {
+        allow read: if signedIn();
+      }
+    }
+
     match /warungs/{wid} {
       // Paths and lookups shared by the rules below. `getAfter` reads a
       // document as it will be once the whole batch is applied, which is how

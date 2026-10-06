@@ -19,6 +19,15 @@ void main() {
     });
   });
 
+  test('formatRelativeInline lowers only the first letter', () {
+    final now = DateTime(2026, 9, 29, 14, 32);
+    expect(formatRelativeInline(now, now), 'baru saja');
+    expect(
+      formatRelativeInline(now.subtract(const Duration(minutes: 5)), now),
+      '5 menit lalu',
+    );
+  });
+
   group('dayGroupOf', () {
     final now = DateTime(2026, 9, 29, 0, 30);
 

@@ -6,7 +6,7 @@ import {
 import {deleteDoc, doc, getDoc, setDoc, updateDoc} from "firebase/firestore";
 import {afterAll, beforeAll, beforeEach, describe, it} from "vitest";
 
-import {buyer, cashier, createTestEnv, OTHER_WARUNG, owner, WARUNG} from "./setup";
+import {anonymous, buyer, cashier, createTestEnv, OTHER_WARUNG, owner, WARUNG} from "./setup";
 
 let env: RulesTestEnvironment;
 
@@ -24,6 +24,48 @@ beforeEach(async () => {
   await env.clearFirestore();
   await env.withSecurityRulesDisabled(async (ctx) => {
     for (const path of paths) await setDoc(doc(ctx.firestore(), path), {salesCash: 31000});
+  });
+});
+
+describe("public copies", () => {
+  const paths = [`publicWarungs/${WARUNG}`, `publicWarungs/${WARUNG}/items/indomie-goreng`];
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), paths[0]), {name: "Warung Barokah"});
+      await setDoc(doc(ctx.firestore(), paths[1]), {name: "Indomie Goreng", status: "tersedia"});
+    });
+  });
+
+  it("can be read by any signed in user", async () => {
+    for (const path of paths) {
+      await assertSucceeds(getDoc(doc(buyer(env), path)));
+      await assertSucceeds(getDoc(doc(cashier(env), path)));
+    }
+  });
+
+  it("cannot be read when signed out", async () => {
+    for (const path of paths) await assertFails(getDoc(doc(anonymous(env), path)));
+  });
+
+  it("cannot be written by anyone, not even the warung's owner", async () => {
+    for (const path of paths) {
+      await assertFails(setDoc(doc(owner(env), path), {status: "tersedia"}));
+      await assertFails(updateDoc(doc(owner(env), path), {name: "Lain"}));
+      await assertFails(deleteDoc(doc(owner(env), path)));
+    }
+  });
+
+  it("gives a buyer no way into the private warung data", async () => {
+    for (const path of [
+      `warungs/${WARUNG}`, `warungs/${WARUNG}/products/indomie`,
+      `warungs/${WARUNG}/sales/s1`, `warungs/${WARUNG}/cash/current`,
+      `warungs/${WARUNG}/cashClosings/1`, `warungs/${WARUNG}/cashMoves/m1`,
+      `warungs/${WARUNG}/members/owner`, `warungs/${WARUNG}/customers/c1`,
+      `warungs/${WARUNG}/suppliers/s1`, `warungs/${WARUNG}/dailySummaries/2026-10-06`,
+      `warungs/${WARUNG}/notifications/n1`,
+    ]) {
+      await assertFails(getDoc(doc(buyer(env), path)));
+    }
   });
 });
 

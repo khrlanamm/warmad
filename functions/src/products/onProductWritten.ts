@@ -4,6 +4,7 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {searchPrefixes, slugify} from "../catalog/text";
 import {ProductState, stockAlert} from "../notifications/alerts";
 import {notifyOwner} from "../notifications/send";
+import {publicItemChanged, publicItemOf} from "../public/projection";
 
 /**
  * Links a warung's product to the shared catalog so the same item can be
@@ -77,6 +78,35 @@ async function alertOnStockChange(
   if (alert) await notifyOwner(warung, ownerUid, alert, {productId: after.id});
 }
 
+/**
+ * Updates what buyers see for this product, when that changed.
+ *
+ * Most sales leave the public status where it was (30 left or 29 left is
+ * both "tersedia"), so this usually costs nothing. The warung document is
+ * only read once there is something to publish.
+ */
+async function publishAvailability(
+  before: DocumentSnapshot | undefined, after: DocumentSnapshot,
+): Promise<void> {
+  const previous = publicItemOf(before?.exists ? before.data() : undefined);
+  const current = publicItemOf(after.data());
+  const movedCatalog = before?.get("catalogId") !== after.get("catalogId");
+  if (!publicItemChanged(previous, current) && !movedCatalog) return;
+
+  const warung = after.ref.parent.parent!;
+  if ((await warung.get()).get("showOnMap") !== true) return;
+
+  const items = getFirestore().collection(`publicWarungs/${warung.id}/items`);
+  const batch = getFirestore().batch();
+  const oldId = before?.get("catalogId") as string | undefined;
+  if (oldId && (current === null || movedCatalog)) batch.delete(items.doc(oldId));
+  if (current !== null) {
+    batch.set(items.doc(after.get("catalogId") as string),
+      {...current, updatedAt: FieldValue.serverTimestamp()});
+  }
+  await batch.commit();
+}
+
 export const onProductWritten = onDocumentWritten(
   "warungs/{wid}/products/{pid}",
   async (event) => {
@@ -84,5 +114,6 @@ export const onProductWritten = onDocumentWritten(
     if (!after?.exists) return;
     await linkToCatalog(after);
     await alertOnStockChange(event.data?.before, after);
+    await publishAvailability(event.data?.before, after);
   },
 );

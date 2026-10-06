@@ -1,5 +1,5 @@
 import {
-  DocumentReference, FieldValue, getFirestore, Transaction,
+  DocumentReference, FieldValue, getFirestore, Timestamp, Transaction,
 } from "firebase-admin/firestore";
 import {logger} from "firebase-functions/v2";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
@@ -65,6 +65,16 @@ export const onSaleCreated = onDocumentCreated(
       const snapshot = await tx.get(ref);
       const sale = snapshot.data() as (SaleDoc & {aggregatedAt?: unknown}) | undefined;
       if (!sale || sale.aggregatedAt || !sale.dayKey) return;
+
+      // Buyers see when the warung last recorded something. Refreshing it
+      // at most every ten minutes keeps that honest without a write per sale.
+      const publicRef = db.doc(`publicWarungs/${warung.id}`);
+      const shown = await tx.get(publicRef);
+      const lastActive = shown.get("lastActiveAt") as Timestamp | undefined;
+      const stale = !lastActive || Date.now() - lastActive.toMillis() > 10 * 60 * 1000;
+      if (shown.exists && stale) {
+        tx.update(publicRef, {lastActiveAt: FieldValue.serverTimestamp()});
+      }
 
       applySummary(tx, warung, sale.dayKey, summaryDeltaForSale(sale));
       applyProducts(tx, warung, sale.dayKey, productDeltaForSale(sale));

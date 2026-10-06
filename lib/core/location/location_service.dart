@@ -18,9 +18,14 @@ Future<Coordinates?> currentCoordinates() async {
     }
 
     final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
+      // The platform location manager is used instead of Google's fused
+      // provider. The fused provider insists on a second dialog asking the
+      // user to turn on Google Location Accuracy, and returns nothing when
+      // that is declined.
+      locationSettings: AndroidSettings(
         accuracy: LocationAccuracy.high,
-        timeLimit: Duration(seconds: 10),
+        timeLimit: const Duration(seconds: 10),
+        forceLocationManager: true,
       ),
     );
     return (lat: position.latitude, lng: position.longitude);

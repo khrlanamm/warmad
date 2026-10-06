@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-import '../core/widgets/coming_soon.dart';
 import '../features/auth/data/auth_service.dart';
 import '../features/auth/ui/sign_in_screen.dart';
+import '../features/buyer/domain/public_warung.dart';
+import '../features/buyer/ui/buyer_map_screen.dart';
+import '../features/buyer/ui/buyer_search_screen.dart';
 import '../features/buyer/ui/buyer_shell.dart';
+import '../features/buyer/ui/public_warung_screen.dart';
 import '../features/cash/ui/cash_closing_screen.dart';
 import '../features/cash/ui/cash_history_screen.dart';
 import '../features/home/ui/home_screen.dart';
@@ -60,6 +62,7 @@ abstract final class Routes {
   static const buyer = '/pembeli';
   static const buyerSearch = '/pembeli/cari';
   static const buyerAccount = '/pembeli/akun';
+  static String buyerWarung(String id) => '/pembeli/warung/$id';
 }
 
 /// Decides where a user belongs from who they are. Returns null to stay.
@@ -261,8 +264,17 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.buyer,
-                builder: (_, _) =>
-                    const ComingSoon(title: 'Peta', icon: LucideIcons.map),
+                builder: (_, _) => const BuyerMapScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'warung/:id',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, state) => PublicWarungScreen(
+                      warungId: state.pathParameters['id']!,
+                      warung: state.extra as PublicWarung?,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -270,10 +282,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.buyerSearch,
-                builder: (_, _) => const ComingSoon(
-                  title: 'Cari barang',
-                  icon: LucideIcons.search,
-                ),
+                builder: (_, _) => const BuyerSearchScreen(),
               ),
             ],
           ),

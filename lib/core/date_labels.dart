@@ -36,3 +36,11 @@ String dayGroupOf(DateTime time, DateTime now) {
     _ => 'Sebelumnya',
   };
 }
+
+/// [formatRelative] for the middle of a sentence: "diperbarui baru saja",
+/// "diperbarui 5 Okt 2026, 18.10". Only the first letter is lowered, so
+/// month names keep their capital.
+String formatRelativeInline(DateTime time, DateTime now) {
+  final text = formatRelative(time, now);
+  return text[0].toLowerCase() + text.substring(1);
+}
