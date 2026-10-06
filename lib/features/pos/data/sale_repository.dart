@@ -23,7 +23,12 @@ final cartProvider = NotifierProvider<CartNotifier, Cart>(CartNotifier.new);
 
 class CartNotifier extends Notifier<Cart> {
   @override
-  Cart build() => const Cart();
+  Cart build() {
+    // A cart belongs to whoever is at the till. Signing in as someone else
+    // starts with an empty one.
+    ref.watch(currentUidProvider);
+    return const Cart();
+  }
 
   void update(Cart Function(Cart cart) change) => state = change(state);
 
