@@ -9,7 +9,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "vitest run",
-    "test:emulator": "firebase emulators:exec --only firestore,auth --project demo-warmad \"vitest run\""
+    "test:rules": "cd .. && firebase emulators:exec --only firestore --project demo-warmad \"npm --prefix functions test\""
   },
   "dependencies": {
     "firebase-admin": "^14.5.0",

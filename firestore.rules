@@ -2,9 +2,60 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Membership comes from the custom claims set by Cloud Functions:
+    // `wid` is the warung the account belongs to, `role` is owner or cashier.
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    function isMember(wid) {
+      return signedIn() && request.auth.token.wid == wid;
+    }
+    function isOwner(wid) {
+      return isMember(wid) && request.auth.token.role == 'owner';
+    }
+    function changedOnly(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
     // Everything is denied unless a rule below allows it.
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // `warungId` and `role` mirror the custom claims and are written only by
+    // Cloud Functions, so a client can never grant itself access to a warung.
+    match /users/{uid} {
+      function validProfile() {
+        return request.resource.data.mode in ['warung', 'pembeli'];
+      }
+      allow read: if isSelf(uid);
+      allow create: if isSelf(uid)
+        && request.resource.data.keys().hasOnly(
+             ['displayName', 'email', 'photoURL', 'mode', 'createdAt', 'updatedAt'])
+        && validProfile();
+      allow update: if isSelf(uid)
+        && changedOnly(['displayName', 'email', 'photoURL', 'mode', 'updatedAt'])
+        && validProfile();
+    }
+
+    match /warungs/{wid} {
+      allow read: if isMember(wid);
+      // Created by the createWarung function. `geohash` and `ownerUid` stay
+      // server-owned.
+      allow update: if isOwner(wid)
+        && changedOnly(['name', 'phone', 'address', 'hours', 'showOnMap',
+                        'cashReminderTime', 'updatedAt']);
+
+      match /members/{uid} {
+        allow read: if isMember(wid);
+      }
+
+      match /cash/current {
+        allow read: if isMember(wid);
+      }
     }
   }
 }

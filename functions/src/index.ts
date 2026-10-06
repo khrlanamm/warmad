@@ -5,3 +5,5 @@ initializeApp();
 
 // Jakarta, same region as the Firestore database.
 setGlobalOptions({region: "asia-southeast2", maxInstances: 10});
+
+export {createWarung} from "./warung/createWarung";

@@ -167,7 +167,13 @@ abstract final class AppTheme {
         selectedColor: AppColors.green,
         side: const BorderSide(color: AppColors.border),
         shape: const StadiumBorder(),
-        labelStyle: textTheme.labelMedium,
+        labelStyle: textTheme.labelMedium?.copyWith(
+          color: WidgetStateColor.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? AppColors.white
+                : AppColors.ink,
+          ),
+        ),
         showCheckmark: false,
       ),
       navigationBarTheme: NavigationBarThemeData(

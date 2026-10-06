@@ -39,6 +39,8 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Android-restricted Maps SDK key, kept out of git in key.properties.
+        manifestPlaceholders["mapsApiKey"] = keystoreProperties.getProperty("mapsApiKey") ?: ""
     }
 
     signingConfigs {
