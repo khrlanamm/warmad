@@ -83,6 +83,8 @@ class _CashClosingScreenState extends ConsumerState<CashClosingScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cash = ref.watch(cashStateProvider).value;
+    final lateRecords =
+        ref.watch(lateRecordsProvider).value ?? (count: 0, net: 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -112,6 +114,28 @@ class _CashClosingScreenState extends ConsumerState<CashClosingScreen> {
                     ),
                   const SizedBox(height: 14),
                   _Summary(cash: cash),
+                  if (lateRecords.count > 0) ...[
+                    const SizedBox(height: 10),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppColors.yellowTint,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Text(
+                          '${lateRecords.count} penjualan '
+                          '(${formatRupiah(lateRecords.net)}) '
+                          'dicatat sebelum tutup kas terakhir, tapi baru masuk '
+                          'sesudahnya karena HP-nya sedang tanpa internet. '
+                          'Uangnya sudah ikut terhitung waktu itu, jadi kas '
+                          'sekarang bisa tampak kurang '
+                          '${formatRupiah(lateRecords.net)}.',
+                          style: AppText.body(14),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   Text(
                     'Hitung uang di laci, lalu isi di sini',

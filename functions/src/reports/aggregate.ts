@@ -119,3 +119,16 @@ export function auditSale(sale: SaleDoc): string | null {
   if (sum !== sale.total) return "The total is not the sum of the items.";
   return null;
 }
+
+/**
+ * True for a record made before the open cash period started but synced
+ * after it: a phone was offline when the cash was closed. The money was
+ * already in the drawer at that closing, yet the record lands in the period
+ * that is open now, so the owner is told about it at the next closing.
+ */
+export function isLateSync(
+  occurredAtMillis: number | undefined, periodOpenedAtMillis: number | undefined,
+): boolean {
+  if (occurredAtMillis === undefined || periodOpenedAtMillis === undefined) return false;
+  return occurredAtMillis < periodOpenedAtMillis;
+}

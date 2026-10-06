@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 
 import {
-  auditSale, productDeltaForSale, summaryDeltaForMove, summaryDeltaForSale,
+  auditSale, isLateSync, productDeltaForSale, summaryDeltaForMove, summaryDeltaForSale,
 } from "../src/reports/aggregate";
 
 const sale = {
@@ -114,5 +114,23 @@ describe("auditSale", () => {
 
   it("catches a sale with no items", () => {
     expect(auditSale({items: [], total: 0})).toMatch(/no items/i);
+  });
+});
+
+describe("isLateSync", () => {
+  const openedAt = Date.parse("2026-10-06T16:30:00Z");
+
+  it("flags a record made before the open period started", () => {
+    expect(isLateSync(openedAt - 60_000, openedAt)).toBe(true);
+  });
+
+  it("does not flag a record made in the open period", () => {
+    expect(isLateSync(openedAt, openedAt)).toBe(false);
+    expect(isLateSync(openedAt + 1, openedAt)).toBe(false);
+  });
+
+  it("does not flag anything when a time is missing", () => {
+    expect(isLateSync(undefined, openedAt)).toBe(false);
+    expect(isLateSync(openedAt - 1, undefined)).toBe(false);
   });
 });
