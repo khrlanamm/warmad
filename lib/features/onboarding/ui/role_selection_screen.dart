@@ -23,21 +23,24 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
   AppMode _selected = AppMode.warung;
   bool _saving = false;
 
-  Future<void> _continue() async {
+  /// Saves the chosen side. [asCashier] continues to the invite code screen
+  /// instead of warung registration.
+  Future<void> _continue({bool asCashier = false}) async {
     final auth = ref.read(authServiceProvider);
     final user = auth.currentUser;
     if (user == null) return;
+    final mode = asCashier ? AppMode.warung : _selected;
 
     setState(() => _saving = true);
     try {
       final existing = ref.read(userProfileProvider).value;
       await ref
           .read(profileRepositoryProvider)
-          .setMode(user, _selected, isNew: existing == null);
-      // The router allows an owner without a warung to stay here (to change
-      // role), so moving on to registration has to be explicit.
-      if (mounted && _selected == AppMode.warung) {
-        context.go(Routes.warungSetup);
+          .setMode(user, mode, isNew: existing == null);
+      // The router lets someone without a warung stay here (to change
+      // role), so moving on has to be explicit.
+      if (mounted && mode == AppMode.warung) {
+        context.go(asCashier ? Routes.joinWarung : Routes.warungSetup);
       }
     } catch (_) {
       if (!mounted) return;
@@ -85,11 +88,18 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
               ),
               const Spacer(),
               FilledButton(
-                onPressed: _saving ? null : _continue,
+                onPressed: _saving ? null : () => _continue(),
                 child: const Text('Lanjut'),
               ),
               const SizedBox(height: 4),
               TextButton(
+                onPressed: _saving ? null : () => _continue(asCashier: true),
+                child: const Text('Saya kasir, punya kode undangan'),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.inkMuted,
+                ),
                 onPressed: () => ref.read(authServiceProvider).signOut(),
                 child: const Text('Keluar akun'),
               ),

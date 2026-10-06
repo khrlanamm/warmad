@@ -1,4 +1,3 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../app/router.dart';
+import '../../../core/firebase/function_errors.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/location/location_service.dart';
 import '../../../core/money.dart';
@@ -113,16 +113,14 @@ class _WarungSetupScreenState extends ConsumerState<WarungSetupScreen> {
           );
       // The router moves on to the warung once the new membership is known.
       ref.invalidate(membershipByUidProvider);
-    } on FirebaseFunctionsException catch (e) {
+    } catch (error) {
       if (!mounted) return;
       _message(
-        e.code == 'unavailable' || e.code == 'deadline-exceeded'
-            ? 'Butuh internet untuk mendaftarkan warung. Coba lagi.'
-            : e.message ?? 'Gagal mendaftarkan warung. Coba lagi.',
+        functionErrorMessage(
+          error,
+          fallback: 'Gagal mendaftarkan warung. Cek internet, lalu coba lagi.',
+        ),
       );
-    } catch (_) {
-      if (!mounted) return;
-      _message('Gagal mendaftarkan warung. Cek internet, lalu coba lagi.');
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

@@ -13,6 +13,8 @@ import '../features/home/ui/home_screen.dart';
 import '../features/ledger/ui/expense_screen.dart';
 import '../features/ledger/ui/parties_screen.dart';
 import '../features/ledger/ui/restock_screen.dart';
+import '../features/members/ui/join_warung_screen.dart';
+import '../features/members/ui/members_screen.dart';
 import '../features/notifications/ui/notifications_screen.dart';
 import '../features/onboarding/ui/loading_screen.dart';
 import '../features/onboarding/ui/role_selection_screen.dart';
@@ -33,6 +35,7 @@ abstract final class Routes {
   static const loading = '/memuat';
   static const role = '/peran';
   static const warungSetup = '/daftar-warung';
+  static const joinWarung = '/gabung';
 
   static const warung = '/warung';
   static const warungPos = '/warung/kasir';
@@ -52,6 +55,7 @@ abstract final class Routes {
   static const warungCustomers = '/warung/kasbon';
   static const warungSales = '/warung/penjualan';
   static const warungNotifications = '/warung/notifikasi';
+  static const warungMembers = '/warung/kasir-warung';
 
   static const buyer = '/pembeli';
   static const buyerSearch = '/pembeli/cari';
@@ -82,8 +86,9 @@ String? resolveRedirect({
   } else if (hasWarung) {
     home = Routes.warung;
   } else {
-    // An owner without a warung may still go back and change role.
-    if (location == Routes.role) return null;
+    // Without a warung yet, the user may register one, join one as
+    // cashier, or go back and change role.
+    if (location == Routes.role || location == Routes.joinWarung) return null;
     home = Routes.warungSetup;
   }
   return within(home) ? null : home;
@@ -125,6 +130,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.warungSetup,
         builder: (_, _) => const WarungSetupScreen(),
+      ),
+      GoRoute(
+        path: Routes.joinWarung,
+        builder: (_, _) => const JoinWarungScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => WarungShell(navigationShell: shell),
@@ -176,6 +185,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'notifikasi',
                     parentNavigatorKey: rootKey,
                     builder: (_, _) => const NotificationsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'kasir-warung',
+                    parentNavigatorKey: rootKey,
+                    builder: (_, _) => const MembersScreen(),
                   ),
                 ],
               ),

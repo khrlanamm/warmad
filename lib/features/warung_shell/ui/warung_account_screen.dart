@@ -175,6 +175,12 @@ class WarungAccountScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   ListTile(
+                    title: const Text('Akun kasir'),
+                    trailing: const Icon(LucideIcons.chevronRight),
+                    onTap: () => context.push(Routes.warungMembers),
+                  ),
+                  const Divider(),
+                  ListTile(
                     title: const Text('Pengingat tutup kas'),
                     trailing: Text(
                       warung.cashReminderTime?.replaceAll(':', '.') ?? 'Mati',

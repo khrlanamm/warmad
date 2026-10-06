@@ -45,6 +45,16 @@ void main() {
       expect(go(Routes.role, mode: AppMode.warung), isNull);
     });
 
+    test('lets someone without a warung enter an invite code', () {
+      expect(go(Routes.joinWarung, mode: AppMode.warung), isNull);
+      // Once they belong to a warung there is nothing left to join.
+      expect(
+        go(Routes.joinWarung, mode: AppMode.warung, hasWarung: true),
+        Routes.warung,
+      );
+      expect(go(Routes.joinWarung, mode: AppMode.pembeli), Routes.buyer);
+    });
+
     test('keeps a warung member inside the warung side', () {
       String? member(String location) =>
           go(location, mode: AppMode.warung, hasWarung: true);
