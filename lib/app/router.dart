@@ -22,6 +22,7 @@ import '../features/products/ui/product_form_screen.dart';
 import '../features/products/ui/stock_list_screen.dart';
 import '../features/profile/data/profile_repository.dart';
 import '../features/profile/domain/user_profile.dart';
+import '../features/reports/ui/reports_screen.dart';
 import '../features/warung_shell/ui/warung_account_screen.dart';
 import '../features/warung_shell/ui/warung_shell.dart';
 
@@ -203,10 +204,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.warungReports,
-                builder: (_, _) => const ComingSoon(
-                  title: 'Laporan',
-                  icon: LucideIcons.chartColumn,
-                ),
+                builder: (_, _) => const ReportsScreen(),
               ),
             ],
           ),

@@ -333,6 +333,15 @@ service cloud.firestore {
               && (creditSale() || paidBackOrRefunded()));
       }
 
+      // Per-day report documents, written by Cloud Functions. Reports are
+      // for the owner only.
+      match /dailySummaries/{dayKey} {
+        allow read: if isOwner(wid);
+      }
+      match /dailyProductSales/{dayKey} {
+        allow read: if isOwner(wid);
+      }
+
       match /products/{pid} {
         function validProduct() {
           let d = request.resource.data;
