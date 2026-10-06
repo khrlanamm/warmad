@@ -9,3 +9,4 @@ setGlobalOptions({region: "asia-southeast2", maxInstances: 10});
 export {createWarung} from "./warung/createWarung";
 export {onProductWritten} from "./products/onProductWritten";
 export {onCashMoveCreated, onSaleCreated} from "./reports/triggers";
+export {recomputeInventory} from "./inventory/recompute";

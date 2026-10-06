@@ -21,7 +21,10 @@ import '../domain/cash_move.dart';
 
 /// Barang masuk: record stock bought from a supplier.
 class RestockScreen extends ConsumerStatefulWidget {
-  const RestockScreen({super.key});
+  const RestockScreen({super.key, this.productId});
+
+  /// Product to start with, when opened from a product's detail screen.
+  final String? productId;
 
   @override
   ConsumerState<RestockScreen> createState() => _RestockScreenState();
@@ -41,6 +44,24 @@ class _RestockScreenState extends ConsumerState<RestockScreen> {
     super.initState();
     _qty.addListener(_refresh);
     _unitCost.addListener(_refresh);
+
+    final product = ref
+        .read(productsProvider)
+        .value
+        ?.where((p) => p.id == widget.productId)
+        .firstOrNull;
+    if (product != null) _useProduct(product);
+  }
+
+  void _useProduct(Product product) {
+    _product = product;
+    if (product.lastBuyPrice > 0) {
+      _unitCost.text = formatNumber(product.lastBuyPrice);
+    }
+    // Start from the suggested order, or one full pack, the way goods
+    // usually arrive.
+    final suggested = product.suggestedOrderQty;
+    if (_qty.text.isEmpty && suggested != null) _qty.text = '$suggested';
   }
 
   @override
@@ -72,16 +93,7 @@ class _RestockScreenState extends ConsumerState<RestockScreen> {
       searchHint: 'Cari barang',
     );
     if (picked == null) return;
-    setState(() {
-      _product = picked;
-      if (picked.lastBuyPrice > 0) {
-        _unitCost.text = formatNumber(picked.lastBuyPrice);
-      }
-      // Start from one full pack, the way goods usually arrive.
-      if (_qty.text.isEmpty && picked.pack != null) {
-        _qty.text = '${picked.pack!.size}';
-      }
-    });
+    setState(() => _useProduct(picked));
   }
 
   Future<void> _pickSupplier() async {

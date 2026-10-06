@@ -484,7 +484,7 @@ class _StockReport extends ConsumerWidget {
     final products = ref.watch(productsProvider).value ?? const <Product>[];
     final byId = {for (final product in products) product.id: product};
     final best = topSellers(
-      ref.watch(productSalesProvider(query)).value ?? const [],
+      (ref.watch(productSalesProvider(query)).value ?? const {}).values,
     );
     final low =
         products.where((p) => p.active && p.status != StockStatus.aman).toList()

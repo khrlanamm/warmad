@@ -59,6 +59,9 @@ class Product {
     this.computedRop,
     this.computedSafetyStock,
     this.computedOrderQty,
+    this.avgDailyTenths,
+    this.historyDays,
+    this.leadTimeDays,
     this.active = true,
   });
 
@@ -81,6 +84,9 @@ class Product {
       computedRop: number(figures['rop']),
       computedSafetyStock: number(figures['safetyStock']),
       computedOrderQty: number(figures['eoq']),
+      avgDailyTenths: number(figures['avgDailyTenths']),
+      historyDays: number(figures['days']),
+      leadTimeDays: number(data['leadTimeDays']),
       active: data['active'] as bool? ?? true,
     );
   }
@@ -111,6 +117,17 @@ class Product {
   final int? computedRop;
   final int? computedSafetyStock;
   final int? computedOrderQty;
+
+  /// Average pieces sold per day, times ten, over [historyDays] days.
+  final int? avgDailyTenths;
+  final int? historyDays;
+
+  /// Days between ordering and the goods arriving. Null means one day.
+  final int? leadTimeDays;
+
+  /// True when the reorder figures come from real sales rather than from
+  /// what the owner typed in.
+  bool get hasComputedFigures => computedRop != null;
 
   /// False when the owner has retired the product.
   final bool active;

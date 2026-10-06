@@ -21,11 +21,11 @@ final summariesProvider = StreamProvider.autoDispose
           .watchSummaries(membership.warungId, query.startKey, query.endKey);
     });
 
-/// Pieces sold per product for each day between two day keys.
+/// Pieces sold per product, by day key, between two day keys.
 final productSalesProvider = StreamProvider.autoDispose
-    .family<List<Map<String, int>>, ReportQuery>((ref, query) {
+    .family<Map<String, Map<String, int>>, ReportQuery>((ref, query) {
       final membership = ref.watch(membershipProvider.select((m) => m.value));
-      if (membership == null) return Stream.value(const []);
+      if (membership == null) return Stream.value(const {});
       return ref
           .watch(reportRepositoryProvider)
           .watchProductSales(membership.warungId, query.startKey, query.endKey);
@@ -59,19 +59,19 @@ class ReportRepository {
     },
   );
 
-  Stream<List<Map<String, int>>> watchProductSales(
+  Stream<Map<String, Map<String, int>>> watchProductSales(
     String warungId,
     String startKey,
     String endKey,
   ) => _days(warungId, 'dailyProductSales', startKey, endKey).snapshots().map(
-    (snapshot) => [
+    (snapshot) => {
       for (final doc in snapshot.docs)
-        {
+        doc.id: {
           for (final entry
               in (doc.data()['qty'] as Map<String, dynamic>? ?? const {})
                   .entries)
             entry.key: (entry.value as num?)?.toInt() ?? 0,
         },
-    ],
+    },
   );
 }

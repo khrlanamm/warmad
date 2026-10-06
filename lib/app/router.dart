@@ -18,6 +18,7 @@ import '../features/onboarding/ui/role_selection_screen.dart';
 import '../features/onboarding/ui/warung_setup_screen.dart';
 import '../features/pos/ui/pos_screen.dart';
 import '../features/pos/ui/sales_history_screen.dart';
+import '../features/products/ui/product_detail_screen.dart';
 import '../features/products/ui/product_form_screen.dart';
 import '../features/products/ui/stock_list_screen.dart';
 import '../features/profile/data/profile_repository.dart';
@@ -37,6 +38,9 @@ abstract final class Routes {
   static const warungStock = '/warung/stok';
   static const warungProductNew = '/warung/stok/baru';
   static String warungProduct(String id) => '/warung/stok/barang/$id';
+  static String warungProductEdit(String id) => '/warung/stok/barang/$id/ubah';
+  static String warungRestockOf(String productId) =>
+      '/warung/barang-masuk?barang=$productId';
   static const warungReports = '/warung/laporan';
   static const warungAccount = '/warung/akun';
   static const warungCashClosing = '/warung/tutup-kas';
@@ -142,7 +146,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'barang-masuk',
                     parentNavigatorKey: rootKey,
-                    builder: (_, _) => const RestockScreen(),
+                    builder: (_, state) => RestockScreen(
+                      productId: state.uri.queryParameters['barang'],
+                    ),
                   ),
                   GoRoute(
                     path: 'pengeluaran',
@@ -192,9 +198,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'barang/:id',
                     parentNavigatorKey: rootKey,
-                    builder: (_, state) => ProductFormScreen(
-                      productId: state.pathParameters['id'],
+                    builder: (_, state) => ProductDetailScreen(
+                      productId: state.pathParameters['id']!,
                     ),
+                    routes: [
+                      GoRoute(
+                        path: 'ubah',
+                        parentNavigatorKey: rootKey,
+                        builder: (_, state) => ProductFormScreen(
+                          productId: state.pathParameters['id'],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

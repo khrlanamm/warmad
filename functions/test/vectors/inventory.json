@@ -1,0 +1,473 @@
+[
+ {
+  "name": "design example: Indomie, 12 a day on average, peak 24",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    12,
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12,
+    8,
+    24,
+    10,
+    6,
+    12,
+    12
+   ]
+  },
+  "expected": {
+   "days": 14,
+   "avgDailyTenths": 120,
+   "maxDaily": 24,
+   "safetyStock": 12,
+   "rop": 24,
+   "eoq": 80
+  }
+ },
+ {
+  "name": "steady demand has no safety stock",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+   ]
+  },
+  "expected": {
+   "days": 20,
+   "avgDailyTenths": 50,
+   "maxDaily": 5,
+   "safetyStock": 0,
+   "rop": 5,
+   "eoq": 80
+  }
+ },
+ {
+  "name": "two days of lead time doubles the reorder point",
+  "input": {
+   "leadTimeDays": 2,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12,
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12,
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12
+   ]
+  },
+  "expected": {
+   "days": 21,
+   "avgDailyTenths": 120,
+   "maxDaily": 16,
+   "safetyStock": 8,
+   "rop": 32,
+   "eoq": 80
+  }
+ },
+ {
+  "name": "bought per piece",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 1,
+   "buyPrice": 72000,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    1,
+    0,
+    2,
+    1,
+    0,
+    1,
+    3,
+    1,
+    0,
+    0,
+    2,
+    1,
+    1,
+    0
+   ]
+  },
+  "expected": {
+   "days": 14,
+   "avgDailyTenths": 9,
+   "maxDaily": 3,
+   "safetyStock": 3,
+   "rop": 3,
+   "eoq": 4
+  }
+ },
+ {
+  "name": "slow mover with many empty days",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 10,
+   "buyPrice": 23200,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    2,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    3,
+    0
+   ]
+  },
+  "expected": {
+   "days": 16,
+   "avgDailyTenths": 4,
+   "maxDaily": 3,
+   "safetyStock": 3,
+   "rop": 3,
+   "eoq": 10
+  }
+ },
+ {
+  "name": "fast mover over a full month",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 10,
+   "buyPrice": 1150,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    38,
+    42,
+    55,
+    31,
+    47,
+    60,
+    52,
+    38,
+    42,
+    55,
+    31,
+    47,
+    60,
+    52,
+    38,
+    42,
+    55,
+    31,
+    47,
+    60,
+    52,
+    38,
+    42,
+    55,
+    31,
+    47,
+    60,
+    52,
+    40,
+    44
+   ]
+  },
+  "expected": {
+   "days": 30,
+   "avgDailyTenths": 461,
+   "maxDaily": 60,
+   "safetyStock": 14,
+   "rop": 60,
+   "eoq": 220
+  }
+ },
+ {
+  "name": "unknown buy price gives no order size",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 40,
+   "buyPrice": 0,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12,
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12
+   ]
+  },
+  "expected": {
+   "days": 14,
+   "avgDailyTenths": 120,
+   "maxDaily": 16,
+   "safetyStock": 4,
+   "rop": 16,
+   "eoq": null
+  }
+ },
+ {
+  "name": "thirteen days is not enough history",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12
+   ]
+  },
+  "expected": null
+ },
+ {
+  "name": "fourteen days is just enough",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12,
+    12
+   ]
+  },
+  "expected": {
+   "days": 14,
+   "avgDailyTenths": 120,
+   "maxDaily": 12,
+   "safetyStock": 0,
+   "rop": 12,
+   "eoq": 80
+  }
+ },
+ {
+  "name": "no sales at all",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  "expected": null
+ },
+ {
+  "name": "lead time below one day counts as one",
+  "input": {
+   "leadTimeDays": 0,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12,
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12
+   ]
+  },
+  "expected": {
+   "days": 14,
+   "avgDailyTenths": 120,
+   "maxDaily": 16,
+   "safetyStock": 4,
+   "rop": 16,
+   "eoq": 80
+  }
+ },
+ {
+  "name": "order size is at least one pack",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 50,
+   "buyPrice": 32500,
+   "orderCost": 2000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "expected": {
+   "days": 14,
+   "avgDailyTenths": 3,
+   "maxDaily": 1,
+   "safetyStock": 1,
+   "rop": 1,
+   "eoq": 50
+  }
+ },
+ {
+  "name": "expensive order cost orders more at once",
+  "input": {
+   "leadTimeDays": 1,
+   "packSize": 40,
+   "buyPrice": 2900,
+   "orderCost": 20000,
+   "holdingRatePct": 10,
+   "dailyQty": [
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12,
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12,
+    10,
+    14,
+    9,
+    12,
+    16,
+    11,
+    12
+   ]
+  },
+  "expected": {
+   "days": 21,
+   "avgDailyTenths": 120,
+   "maxDaily": 16,
+   "safetyStock": 4,
+   "rop": 16,
+   "eoq": 240
+  }
+ }
+]

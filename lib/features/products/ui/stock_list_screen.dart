@@ -151,10 +151,8 @@ class _StockListScreenState extends ConsumerState<StockListScreen> {
                       final product = visible[index];
                       return _ProductTile(
                         product: product,
-                        onTap: isOwner
-                            ? () =>
-                                  context.push(Routes.warungProduct(product.id))
-                            : null,
+                        onTap: () =>
+                            context.push(Routes.warungProduct(product.id)),
                       );
                     },
                   ),
