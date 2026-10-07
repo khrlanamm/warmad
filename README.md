@@ -58,6 +58,8 @@ python3 -I docs/manual/make_manual.py     # hasil: docs/manual/buku-panduan-warm
 
 Isi tiap halaman (judul, tangkapan layar, posisi nomor, penjelasan) ada di daftar `PAGES` dalam skrip. Tangkapan layar baru ditaruh di `docs/manual/raw/` sebagai PNG 1080x2424; skrip memotong dan mengecilkannya ke `docs/manual/shots/`.
 
+Gambar layar pemindai barcode (`shots/o_scan.jpg`) bukan tangkapan layar: kamera emulator hanya menampilkan ruangan virtual, jadi gambarnya digambar oleh `docs/manual/make_scan_shot.py`.
+
 ## Data demo
 
 ```sh

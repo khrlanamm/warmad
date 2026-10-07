@@ -6,6 +6,7 @@ the screenshots) printed to PDF with headless Chrome.
     python3 -I docs/manual/make_manual.py
 
 Input:  docs/manual/shots/*.jpg   emulator screenshots, status bar cropped
+        (o_scan.jpg is drawn by make_scan_shot.py, see there)
 Output: docs/manual/buku-panduan-warmad.pdf
 
 New screenshots go into docs/manual/raw/ as full-resolution PNG files
@@ -160,7 +161,7 @@ PAGES = [
          [shot("o_scan_izin", "Pertama kali",
                (62, 455, "Izinkan kamera. Gambar kamera tidak disimpan dan tidak dikirim.")),
           shot("o_scan", "Arahkan kamera",
-               (200, 420, "Arahkan ke barcode. Barang yang cocok langsung masuk keranjang."),
+               (314, 430, "Arahkan ke barcode di kemasan. Barang yang cocok langsung masuk keranjang."),
                (72, 84, "Tutup pemindai."))],
          path="Tab Kasir › ikon pindai",
          tip="Muncul pesan “Barang dengan barcode ini belum terdaftar”? Tambahkan barangnya dulu lewat tab Stok.",
@@ -473,7 +474,7 @@ b {{ font-weight: 700; }}
 
 /* The yellow scalloped awning from the logo. */
 .awning {{ position: absolute; top: 0; left: 0; right: 0; height: 16px; background: {YELLOW}; }}
-.awning::after {{ content: ""; position: absolute; top: 16px; left: 0; right: 0; height: 18px;
+.awning::after {{ content: ""; position: absolute; top: 15px; left: 0; right: 0; height: 18px;
   background: radial-gradient(ellipse 22px 15px at 50% 0, {YELLOW} 98%, transparent 100%) repeat-x;
   background-size: 44px 18px; }}
 
@@ -489,11 +490,13 @@ h1 {{ margin: 12px 0 0; font: 700 31px/1.1 Bricolage; letter-spacing: -.7px; }}
 
 .pin {{ display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%;
   background: {YELLOW}; color: {INK}; font: 800 13px/1 Bricolage; }}
-.device {{ position: relative; background: {INK}; box-shadow: 0 14px 30px rgba(26, 43, 34, .22); }}
+/* Shadows have hard edges on purpose. Chrome prints a blurred shadow as a
+   masked image, and the macOS PDF viewer draws those as gray boxes. */
+.device {{ position: relative; background: {INK}; box-shadow: 7px 9px 0 #E9E2D0; }}
 .screen {{ position: relative; overflow: hidden; background: {CREAM}; aspect-ratio: {RAW_W} / {RAW_H - STATUS_BAR}; }}
 .screen img {{ display: block; width: 100%; }}
 .screen .pin {{ position: absolute; width: 25px; height: 25px; margin: -12.5px 0 0 -12.5px;
-  box-shadow: 0 0 0 2.5px #fff, 0 3px 8px rgba(0, 0, 0, .38); }}
+  box-shadow: 0 0 0 2.5px #fff, 0 0 0 4px {INK}; }}
 
 .legend {{ list-style: none; margin: 14px 0 0; padding: 0 2px; display: grid; gap: 6.5px; }}
 .legend li {{ display: flex; gap: 9px; align-items: flex-start; line-height: 1.34; }}
@@ -537,7 +540,7 @@ h1 {{ margin: 12px 0 0; font: 700 31px/1.1 Bricolage; letter-spacing: -.7px; }}
 /* Cover */
 .cover {{ background: {GREEN}; color: #fff; padding: 0; }}
 .cover .awning {{ height: 34px; }}
-.cover .awning::after {{ top: 34px; height: 30px; background-size: 72px 30px;
+.cover .awning::after {{ top: 33px; height: 30px; background-size: 72px 30px;
   background-image: radial-gradient(ellipse 36px 25px at 50% 0, {YELLOW} 98%, transparent 100%); }}
 .cover .logo {{ position: absolute; left: 34px; top: 118px; width: 300px; }}
 .cover .kicker {{ position: absolute; left: 60px; top: 372px; font: 700 13px/1 DMSans; letter-spacing: 2.4px;
@@ -554,7 +557,7 @@ h1 {{ margin: 12px 0 0; font: 700 31px/1.1 Bricolage; letter-spacing: -.7px; }}
 .cover .roles small {{ display: block; margin-top: 2px; font: 400 12px/1.2 DMSans; color: rgba(255, 255, 255, .72); }}
 .cover .roles .go {{ margin-left: auto; color: {YELLOW}; display: grid; }}
 .cover .stage {{ position: absolute; left: 448px; top: 250px; transform: rotate(5deg); }}
-.cover .device {{ width: 330px; padding: 11px; border-radius: 42px; box-shadow: 0 30px 60px rgba(0, 0, 0, .35); }}
+.cover .device {{ width: 330px; padding: 11px; border-radius: 42px; box-shadow: 12px 14px 0 #17523A; }}
 .cover .screen {{ border-radius: 31px; }}
 .cover .ver {{ position: absolute; left: 60px; bottom: 44px; font: 500 12px/1 DMSans; color: rgba(255, 255, 255, .7); }}
 
@@ -573,16 +576,20 @@ h1 {{ margin: 12px 0 0; font: 700 31px/1.1 Bricolage; letter-spacing: -.7px; }}
 
 /* Section opener */
 .divider {{ background: var(--accent); color: var(--on); padding: 0; }}
-.divider .big {{ position: absolute; left: 54px; top: 86px; font: 800 150px/1 Bricolage; letter-spacing: -6px; opacity: .2; }}
-.divider .label {{ position: absolute; left: 60px; top: 254px; font: 700 13px/1 DMSans; letter-spacing: 2.4px; text-transform: uppercase; opacity: .8; }}
+.divider .big {{ position: absolute; left: 54px; top: 86px; font: 800 150px/1 Bricolage; letter-spacing: -6px;
+  color: color-mix(in srgb, var(--on) 20%, var(--accent)); }}
+.divider .label {{ position: absolute; left: 60px; top: 254px; font: 700 13px/1 DMSans; letter-spacing: 2.4px; text-transform: uppercase;
+  color: color-mix(in srgb, var(--on) 80%, var(--accent)); }}
 .divider h1 {{ position: absolute; left: 58px; top: 278px; width: 380px; margin: 0; font: 700 58px/1 Bricolage; letter-spacing: -1.8px; }}
-.divider .sub {{ position: absolute; left: 60px; top: 414px; width: 320px; font: 400 16px/1.42 DMSans; opacity: .9; }}
+.divider .sub {{ position: absolute; left: 60px; top: 414px; width: 320px; font: 400 16px/1.42 DMSans;
+  color: color-mix(in srgb, var(--on) 90%, var(--accent)); }}
 .divider .list {{ position: absolute; left: 60px; top: 520px; width: 330px; display: grid; gap: 0; }}
 .divider .list a {{ display: flex; justify-content: space-between; gap: 10px; padding: 4.6px 0; font: 500 13px/1.2 DMSans;
   border-bottom: 1px solid color-mix(in srgb, var(--on) 22%, transparent); }}
 .divider .list a b {{ font-weight: 700; }}
 .divider .stage {{ position: absolute; left: 452px; top: 214px; transform: rotate(4deg); }}
-.divider .device {{ width: 320px; padding: 10px; border-radius: 40px; box-shadow: 0 30px 60px rgba(0, 0, 0, .3); }}
+.divider .device {{ width: 320px; padding: 10px; border-radius: 40px;
+  box-shadow: 12px 14px 0 color-mix(in srgb, var(--accent) 78%, #000); }}
 .divider .screen {{ border-radius: 30px; }}
 .divider .foot, .divider .foot .mark, .divider .foot .mark span {{ color: var(--on); }}
 .divider .foot .home {{ background: transparent; color: var(--on); border-color: color-mix(in srgb, var(--on) 40%, transparent); }}
