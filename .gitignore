@@ -62,3 +62,6 @@ key.properties
 # Firebase CLI
 .firebase/
 firebase-debug.log
+
+# Manual: full-resolution screenshots, shrunk into docs/manual/shots by make_manual.py
+/docs/manual/raw/

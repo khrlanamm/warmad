@@ -16,6 +16,8 @@ Flutter di sisi aplikasi, Firebase di sisi server (Authentication, Firestore, Cl
 | `functions/scripts` | Skrip data demo dan perbaikan |
 | `firestore.rules` | Security Rules |
 | `hosting` | Halaman kebijakan privasi dan hapus akun |
+| `store` | Teks dan gambar listing Play Store |
+| `docs/manual` | Buku panduan pengguna (PDF) dan skrip pembuatnya |
 
 ## Menjalankan
 
@@ -47,6 +49,14 @@ firebase deploy --only functions,firestore:rules
 firebase deploy --only hosting
 flutter build appbundle --release         # hasil: build/app/outputs/bundle/release/
 ```
+
+## Buku panduan
+
+```sh
+python3 -I docs/manual/make_manual.py     # hasil: docs/manual/buku-panduan-warmad.pdf
+```
+
+Isi tiap halaman (judul, tangkapan layar, posisi nomor, penjelasan) ada di daftar `PAGES` dalam skrip. Tangkapan layar baru ditaruh di `docs/manual/raw/` sebagai PNG 1080x2424; skrip memotong dan mengecilkannya ke `docs/manual/shots/`.
 
 ## Data demo
 
