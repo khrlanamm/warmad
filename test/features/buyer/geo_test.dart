@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:warmad/features/buyer/domain/geo.dart';
 import 'package:warmad/features/buyer/domain/public_warung.dart';
@@ -17,26 +19,68 @@ void main() {
     });
   });
 
-  group('nearbyGeohashCells', () {
-    final cells = nearbyGeohashCells(-7.1289, 112.7243);
+  group('geohashCellsCovering', () {
+    const lat = -7.1289, lng = 112.7243;
 
-    test('returns the cell of the point and its neighbours', () {
-      expect(cells.length, 9);
-      expect(cells, contains(encodeGeohash(-7.1289, 112.7243, precision: 5)));
-      expect(cells.every((cell) => cell.length == 5), isTrue);
-    });
+    // A point [meters] from the origin in the direction [bearing] degrees.
+    (double, double) offset(double meters, double bearing) {
+      final radians = bearing * math.pi / 180;
+      final dLat = meters * math.cos(radians) / 111320;
+      final dLng =
+          meters * math.sin(radians) / (111320 * math.cos(lat * math.pi / 180));
+      return (lat + dLat, lng + dLng);
+    }
 
-    test('covers places a few kilometres away in every direction', () {
-      for (final (lat, lng) in [
-        (-7.1289 + 0.03, 112.7243),
-        (-7.1289 - 0.03, 112.7243),
-        (-7.1289, 112.7243 + 0.03),
-        (-7.1289, 112.7243 - 0.03),
-        (-7.1289 + 0.03, 112.7243 - 0.03),
-      ]) {
-        expect(cells, contains(encodeGeohash(lat, lng, precision: 5)));
+    test('includes the cell of the point itself', () {
+      for (final km in radiusOptionsKm) {
+        final cells = geohashCellsCovering(lat, lng, km * 1000);
+        final length = cells.first.length;
+        expect(cells, contains(encodeGeohash(lat, lng, precision: length)));
       }
     });
+
+    test('covers every place on the edge of the circle', () {
+      for (final km in radiusOptionsKm) {
+        final cells = geohashCellsCovering(lat, lng, km * 1000);
+        final length = cells.first.length;
+        for (var bearing = 0.0; bearing < 360; bearing += 15) {
+          final (pLat, pLng) = offset(km * 1000 * 0.999, bearing);
+          expect(
+            cells,
+            contains(encodeGeohash(pLat, pLng, precision: length)),
+            reason: '$km km at $bearing°',
+          );
+        }
+      }
+    });
+
+    test('keeps the number of queries small', () {
+      int count(int km) => geohashCellsCovering(lat, lng, km * 1000).length;
+      expect(count(1), lessThanOrEqualTo(4));
+      expect(count(3), lessThanOrEqualTo(9));
+      expect(count(5), lessThanOrEqualTo(16));
+      expect(count(10), lessThanOrEqualTo(6));
+      expect(count(20), lessThanOrEqualTo(12));
+    });
+
+    test('uses 5-character cells up to 5 km and 4 beyond', () {
+      expect(
+        geohashCellsCovering(lat, lng, 5000).every((c) => c.length == 5),
+        isTrue,
+      );
+      expect(
+        geohashCellsCovering(lat, lng, 10000).every((c) => c.length == 4),
+        isTrue,
+      );
+    });
+  });
+
+  test('radiusCovering picks the smallest radius that reaches', () {
+    expect(radiusCovering(800), 1);
+    expect(radiusCovering(1000), 1);
+    expect(radiusCovering(4200), 5);
+    expect(radiusCovering(12000), 20);
+    expect(radiusCovering(25000), isNull);
   });
 
   group('distanceMeters', () {

@@ -53,7 +53,10 @@ class _BuyerSearchScreenState extends ConsumerState<BuyerSearchScreen> {
   }
 
   Future<void> _pick(CatalogEntry entry) async {
-    FocusScope.of(context).unfocus();
+    // Unfocus the field itself. Unfocusing the scope would leave the field
+    // as the scope's focused child, and closing the radius sheet would hand
+    // it focus again, keyboard and all.
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       _search.text = entry.name;
       _item = entry;
@@ -86,6 +89,13 @@ class _BuyerSearchScreenState extends ConsumerState<BuyerSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // A new radius brings other warungs into the search. Read the item at
+    // each of them again.
+    ref.listen(buyerRadiusProvider, (previous, next) {
+      final item = _item;
+      if (item != null) _pick(item);
+    });
+
     final theme = Theme.of(context);
     final item = _item;
 
@@ -195,6 +205,7 @@ class _BuyerSearchScreenState extends ConsumerState<BuyerSearchScreen> {
     }
 
     final now = DateTime.now();
+    final radiusKm = ref.watch(buyerRadiusProvider);
     final nearby = ref.watch(nearbyWarungsProvider).value ?? const [];
     // Only warungs that carry the item at all.
     final selling = nearby.where((w) => availability.containsKey(w.id));
@@ -215,6 +226,7 @@ class _BuyerSearchScreenState extends ConsumerState<BuyerSearchScreen> {
         Wrap(
           spacing: 8,
           children: [
+            const RadiusChip(),
             FilterChip(
               label: const Text('Stok tersedia'),
               selected: _inStockOnly,
@@ -230,8 +242,10 @@ class _BuyerSearchScreenState extends ConsumerState<BuyerSearchScreen> {
         const SizedBox(height: 8),
         Text(
           selling.isEmpty
-              ? 'Belum ada warung terdekat yang menjual ${item.name}.'
-              : 'Tersedia di $inStock dari ${selling.length} warung terdekat',
+              ? 'Belum ada warung dalam $radiusKm km yang menjual '
+                    '${item.name}.'
+              : 'Tersedia di $inStock dari ${selling.length} warung dalam '
+                    '$radiusKm km',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: AppColors.inkMuted,
           ),

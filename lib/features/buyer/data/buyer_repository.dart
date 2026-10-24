@@ -14,17 +14,38 @@ final buyerRepositoryProvider = Provider<BuyerRepository>(
 /// Jl. Telang Raya, Kamal. Used when the buyer's position is not available.
 const fallbackCoordinates = (lat: -7.1289, lng: 112.7243);
 
-/// The buyer's position, or null when location is off or denied.
-final buyerLocationProvider = FutureProvider<Coordinates?>(
-  (ref) => currentCoordinates(),
-);
+/// The buyer's position, or why it could not be read.
+final buyerLocationProvider = FutureProvider<LocationFix>((ref) => locate());
 
-/// Warungs around the buyer, nearest first.
-final nearbyWarungsProvider = FutureProvider<List<PublicWarung>>((ref) async {
-  final position = await ref.watch(buyerLocationProvider.future);
-  final origin = position ?? fallbackCoordinates;
-  return ref.watch(buyerRepositoryProvider).nearby(origin.lat, origin.lng);
+/// Search radius the buyer picked, in kilometres. Shared by the map and the
+/// item search, and kept for the session only.
+final buyerRadiusProvider = NotifierProvider<BuyerRadius, int>(BuyerRadius.new);
+
+class BuyerRadius extends Notifier<int> {
+  @override
+  int build() => 5;
+
+  void set(int km) => state = km;
+}
+
+/// Warungs within [km] of the buyer, nearest first. Kept per radius, so
+/// going back to a radius picked before shows it at once.
+final warungsWithinProvider = FutureProvider.family<List<PublicWarung>, int>((
+  ref,
+  km,
+) async {
+  final fix = await ref.watch(buyerLocationProvider.future);
+  final origin = fix.coordinates ?? fallbackCoordinates;
+  return ref
+      .watch(buyerRepositoryProvider)
+      .nearby(origin.lat, origin.lng, km * 1000);
 });
+
+/// Warungs within the radius the buyer picked, nearest first.
+final nearbyWarungsProvider = FutureProvider<List<PublicWarung>>(
+  (ref) =>
+      ref.watch(warungsWithinProvider(ref.watch(buyerRadiusProvider)).future),
+);
 
 /// Goods of one warung as buyers see them, by name.
 final publicItemsProvider = FutureProvider.autoDispose
@@ -58,22 +79,27 @@ class BuyerRepository {
     );
   }
 
-  /// Warungs within roughly 7 km of a point, nearest first.
+  /// Warungs within [radiusMeters] of a point, nearest first.
   ///
   /// One small range query per geohash cell around the point. Only warungs
   /// in those cells are read, however many exist elsewhere.
-  Future<List<PublicWarung>> nearby(double lat, double lng) async {
+  Future<List<PublicWarung>> nearby(
+    double lat,
+    double lng,
+    double radiusMeters,
+  ) async {
     final snapshots = await Future.wait([
-      for (final cell in nearbyGeohashCells(lat, lng))
+      for (final cell in geohashCellsCovering(lat, lng, radiusMeters))
         _warungs.orderBy('geohash').startAt([cell]).endAt(['$cell']).get(),
     ]);
     final found = <String, PublicWarung>{};
     for (final snapshot in snapshots) {
       for (final doc in snapshot.docs) {
         final warung = _warungOf(doc);
-        found[warung.id] = warung.withDistance(
-          distanceMeters(lat, lng, warung.lat, warung.lng),
-        );
+        final distance = distanceMeters(lat, lng, warung.lat, warung.lng);
+        // The cells reach past the circle at their corners.
+        if (distance > radiusMeters) continue;
+        found[warung.id] = warung.withDistance(distance);
       }
     }
     return found.values.toList()

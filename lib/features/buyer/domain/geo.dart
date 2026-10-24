@@ -42,21 +42,51 @@ String encodeGeohash(double lat, double lng, {int precision = 9}) {
   return hash.toString();
 }
 
-/// Geohash cells to search for places around a point: the cell the point is
-/// in and its eight neighbours, as 5-character prefixes. One cell is about
-/// 4.9 km on a side, so together they cover roughly 15 by 15 km and never
-/// miss a place just across a cell border.
-Set<String> nearbyGeohashCells(double lat, double lng) {
-  // Size of a 5-character cell in degrees.
-  const latStep = 180 / 4096;
-  const lngStep = 360 / 8192;
+/// Search radii a buyer can pick, in kilometres.
+const radiusOptionsKm = [1, 3, 5, 10, 20];
+
+/// The smallest search radius that reaches a place [meters] away, or null
+/// when it is beyond the largest one.
+int? radiusCovering(double meters) =>
+    radiusOptionsKm.where((km) => km * 1000 >= meters).firstOrNull;
+
+/// Geohash cells, as prefixes, that together cover every place within
+/// [radiusMeters] of a point.
+///
+/// Up to 5 km the cells have 5 characters (about 4.9 km on a side), so at
+/// most 16 are needed. Larger radii use 4-character cells (about 39 by
+/// 19.5 km), at most 12 for 20 km. Each cell is one range query.
+Set<String> geohashCellsCovering(double lat, double lng, double radiusMeters) {
+  final precision = radiusMeters <= 5000 ? 5 : 4;
+  // Size of one cell in degrees: 5 characters hold 13 longitude bits and 12
+  // latitude bits, 4 characters hold 10 of each.
+  final latStep = precision == 5 ? 180 / 4096 : 180 / 1024;
+  final lngStep = precision == 5 ? 360 / 8192 : 360 / 1024;
+
+  const metersPerDegree = 111320.0;
+  final dLat = radiusMeters / metersPerDegree;
+  final dLng =
+      radiusMeters /
+      (metersPerDegree * math.max(math.cos(lat * math.pi / 180), 0.01));
+  final south = (lat - dLat).clamp(-90.0, 90.0);
+  final north = (lat + dLat).clamp(-90.0, 90.0);
+  final west = lng - dLng;
+  final east = lng + dLng;
+
+  // Steps the size of one cell, plus the far edge, land in every cell the
+  // box touches.
+  List<double> samples(double from, double to, double step) => [
+    for (var value = from; value < to; value += step) value,
+    to,
+  ];
+
   return {
-    for (final dLat in const [-1, 0, 1])
-      for (final dLng in const [-1, 0, 1])
+    for (final sampleLat in samples(south, north, latStep))
+      for (final sampleLng in samples(west, east, lngStep))
         encodeGeohash(
-          (lat + dLat * latStep).clamp(-90.0, 90.0),
-          lng + dLng * lngStep,
-          precision: 5,
+          sampleLat,
+          (sampleLng + 540) % 360 - 180,
+          precision: precision,
         ),
   };
 }
