@@ -80,3 +80,7 @@ The owner must register the shop in the app first. The script fills the catalog,
 - Security Rules tie every balance change (cash, supplier debt, kasbon) to the record that explains it in the same batch.
 - Buyers only read `publicWarungs`, a copy written by Cloud Functions. It holds only the name, location, opening hours, and item availability.
 - The formulas for safety stock, reorder point, and order quantity exist in both TypeScript and Dart, and both are tested with the same vectors in `functions/test/vectors/inventory.json`.
+
+## License
+
+All rights reserved. The source code is public for reference only. See [LICENSE](LICENSE).
