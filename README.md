@@ -19,7 +19,7 @@ Flutter on the app side, Firebase on the server side (Authentication, Firestore,
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
   shop["Shop app (Flutter)<br>cashier, stock, kasbon, cash closing"]
   buyer["Buyer screens<br>map and item search"]
   subgraph Firebase
@@ -35,7 +35,7 @@ flowchart LR
   fn -->|daily reports and reorder points| fs
   fn -->|name, location, hours, availability| pub
   fn -->|low stock and cash closing reminders| fcm
-  fcm --> shop
+  fcm -.->|push notifications| shop
   buyer -->|read only| pub
 ```
 
