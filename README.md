@@ -27,7 +27,7 @@ flowchart TB
     fs[("Firestore<br>one WriteBatch per record")]
     pub[("publicWarungs")]
     fn["Cloud Functions<br>reports, inventory, invites, sync"]
-    fcm[Cloud Messaging]
+    fcm["Cloud Messaging<br>push to phones"]
   end
   shop -->|sign in| auth
   shop -->|batched writes, works offline| fs
@@ -35,7 +35,6 @@ flowchart TB
   fn -->|daily reports and reorder points| fs
   fn -->|name, location, hours, availability| pub
   fn -->|low stock and cash closing reminders| fcm
-  fcm -.->|push notifications| shop
   buyer -->|read only| pub
 ```
 
