@@ -11,11 +11,12 @@
 //
 // Run from the repository root:
 //   GOOGLE_APPLICATION_CREDENTIALS=secrets/<service-account>.json \
-//     node functions/scripts/activeUsers.mjs [yyyy-MM-dd] [testers.txt]
+//     node functions/scripts/activeUsers.mjs [yyyy-MM-dd] [testers.txt] [--json]
 //
 // The day is a calendar day in Jakarta time and defaults to today. The
 // optional file holds tester emails, one per line. With it, the report covers
 // those testers only and names the ones who did not open the app.
+// --json prints the same data as JSON, for other scripts to format.
 import {readFileSync} from "node:fs";
 
 import {applicationDefault, initializeApp} from "firebase-admin/app";
@@ -27,7 +28,8 @@ const dayOf = (date) => new Intl.DateTimeFormat("en-CA", {timeZone: ZONE}).forma
 const clockOf = (date) =>
   new Intl.DateTimeFormat("id-ID", {timeZone: ZONE, hour: "2-digit", minute: "2-digit"}).format(date);
 
-const args = process.argv.slice(2);
+const args = process.argv.slice(2).filter((arg) => arg !== "--json");
+const asJson = process.argv.includes("--json");
 const day = args.find((arg) => /^\d{4}-\d{2}-\d{2}$/.test(arg)) ?? dayOf(new Date());
 const testersFile = args.find((arg) => arg !== day);
 const testers = testersFile ?
@@ -85,6 +87,15 @@ const rows = accounts
   })
   .sort((a, b) => (b.lastActive?.getTime() ?? 0) - (a.lastActive?.getTime() ?? 0));
 
+// Testers on the list who never signed in.
+const known = new Set(accounts.map((account) => (account.email ?? "").toLowerCase()));
+const missing = testers ? [...testers].filter((email) => !known.has(email)) : [];
+
+if (asJson) {
+  console.log(JSON.stringify({day, rows, missing}));
+  process.exit(0);
+}
+
 const active = rows.filter((row) => row.activeThatDay);
 console.log(`Aktif pada ${day} (waktu Jakarta): ${active.length} dari ${rows.length} akun`);
 for (const row of active) {
@@ -101,11 +112,7 @@ if (idle.length) {
   }
 }
 
-if (testers) {
-  const known = new Set(accounts.map((account) => (account.email ?? "").toLowerCase()));
-  const missing = [...testers].filter((email) => !known.has(email));
-  if (missing.length) {
-    console.log(`\nBelum pernah masuk ke aplikasi (${missing.length}):`);
-    for (const email of missing) console.log(`  ${email}`);
-  }
+if (missing.length) {
+  console.log(`\nBelum pernah masuk ke aplikasi (${missing.length}):`);
+  for (const email of missing) console.log(`  ${email}`);
 }
