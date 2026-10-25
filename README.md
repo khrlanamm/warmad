@@ -1,5 +1,7 @@
 # Warmad
 
+[![CI](https://github.com/khrlanamm/warmad/actions/workflows/ci.yml/badge.svg)](https://github.com/khrlanamm/warmad/actions/workflows/ci.yml)
+
 ![Warmad feature graphic](https://raw.githubusercontent.com/khrlanamm/khrlanamm/main/assets/projects/warmad.webp)
 
 Android app for warung Madura, the small 24-hour neighborhood shops. For the shop: cashier, stock, incoming goods, expenses, customer credit (kasbon), cash closing, reports, and low stock alerts. For buyers: a map of nearby shops and item search across shops.
@@ -7,6 +9,35 @@ Android app for warung Madura, the small 24-hour neighborhood shops. For the sho
 [Google Play](https://play.google.com/store/apps/details?id=com.benevology.warmad)
 
 Flutter on the app side, Firebase on the server side (Authentication, Firestore, Cloud Functions, Cloud Messaging, Hosting). Firebase project `warrung-madura`, region `asia-southeast2`.
+
+## Screenshots
+
+| Home | Cashier | Cash closing | Reports |
+|---|---|---|---|
+| <img src="docs/images/home.webp" alt="Home screen with cash on hand, today's sales, and a low stock alert" width="200"> | <img src="docs/images/cashier.webp" alt="Cashier screen with item search and cart" width="200"> | <img src="docs/images/cash-closing.webp" alt="Cash closing that compares counted cash with the records" width="200"> | <img src="docs/images/reports.webp" alt="Weekly cash flow report with income and spending per day" width="200"> |
+
+## Architecture
+
+```mermaid
+flowchart LR
+  shop["Shop app (Flutter)<br>cashier, stock, kasbon, cash closing"]
+  buyer["Buyer screens<br>map and item search"]
+  subgraph Firebase
+    auth[Authentication]
+    fs[("Firestore<br>one WriteBatch per record")]
+    pub[("publicWarungs")]
+    fn["Cloud Functions<br>reports, inventory, invites, sync"]
+    fcm[Cloud Messaging]
+  end
+  shop -->|sign in| auth
+  shop -->|batched writes, works offline| fs
+  fs -->|sale, cash, and product triggers| fn
+  fn -->|daily reports and reorder points| fs
+  fn -->|name, location, hours, availability| pub
+  fn -->|low stock and cash closing reminders| fcm
+  fcm --> shop
+  buyer -->|read only| pub
+```
 
 ## Repository layout
 
